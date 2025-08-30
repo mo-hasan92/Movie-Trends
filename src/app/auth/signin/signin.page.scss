@@ -1,0 +1,54 @@
+.signin-form {
+  width: 100%;
+}
+
+.signin-button {
+  --padding-top: 1.2rem;
+  --padding-bottom: 1.2rem;
+  --padding-start: 2rem;
+  --padding-end: 2rem;
+  margin-top: 1.5rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  --background: #b8222e;
+  --color: #ffffff;
+  border-radius: 16px !important;
+  box-shadow:
+    0 12px 32px rgba(184, 34, 46, 0.3),
+    0 4px 16px rgba(184, 34, 46, 0.2);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s;
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 16px 40px rgba(184, 34, 46, 0.4),
+      0 8px 24px rgba(184, 34, 46, 0.3);
+    background: #6b6bd0;
+
+    &::before {
+      left: 100%;
+    }
+  }
+
+  &:active {
+    transform: translateY(-1px);
+  }
+
+  span {
+    position: relative;
+    z-index: 1;
+  }
+}

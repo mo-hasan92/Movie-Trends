@@ -1,3 +1,8 @@
 {
-  "typescript.preferences.autoImportFileExcludePatterns": ["@ionic/angular/common", "@ionic/angular"]
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "@ionic/angular/common",
+    "@ionic/angular"
+  ],
+  "claudeCodeChat.permissions.yoloMode": false,
+  "java.configuration.updateBuildConfiguration": "interactive"
 }

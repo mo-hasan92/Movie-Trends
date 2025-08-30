@@ -1,0 +1,323 @@
+ion-content {
+  --background: #ffffff;
+
+  .ion-padding {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+  }
+}
+.auth-container {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 3rem;
+  box-shadow:
+    0 32px 64px rgba(107, 107, 208, 0.15),
+    0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(107, 107, 208, 0.1);
+  max-width: 450px;
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+  animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes slideUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+  20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+.logo-container {
+  text-align: center;
+  height: 120px; // Feste Höhe für Logo-Bereich
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+
+  .logo {
+    max-height: 350px;
+    max-width: 450px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .logo-placeholder {
+    display: inline-block;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #6b6bd0 0%, #8a8ae6 100%);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.2rem;
+    border-radius: 16px;
+    letter-spacing: 2px;
+    box-shadow: 0 8px 20px rgba(107, 107, 208, 0.3);
+  }
+}
+
+.welcome-text {
+  text-align: center;
+  margin-bottom: 2.5rem;
+
+  p {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 1rem;
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+.input-group {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.modern-input {
+  width: 100%;
+  padding: 1.2rem 1.5rem;
+  border: 2px solid rgba(107, 107, 208, 0.2);
+  border-radius: 16px;
+  background: rgba(107, 107, 208, 0.02);
+  color: #000000;
+  font-size: 1rem;
+  font-weight: 500;
+  outline: none;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: inherit;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: rgba(0, 0, 0, 0.4);
+    font-weight: 400;
+  }
+
+  &:focus {
+    border-color: #6b6bd0;
+    background: #ffffff;
+    color: #000000;
+    transform: translateY(-2px);
+    box-shadow:
+      0 12px 32px rgba(107, 107, 208, 0.2),
+      0 0 0 4px rgba(107, 107, 208, 0.1);
+  }
+
+  &:hover:not(:focus) {
+    border-color: rgba(107, 107, 208, 0.4);
+    transform: translateY(-1px);
+  }
+}
+
+.error-message {
+  background: rgba(184, 34, 46, 0.08);
+  border: 1px solid rgba(184, 34, 46, 0.2);
+  color: #b8222e;
+  padding: 1rem 1.2rem;
+  border-radius: 12px;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  animation: shake 0.6s ease-in-out;
+  position: relative;
+
+  &::before {
+    content: '⚠';
+    margin-right: 0.5rem;
+    font-size: 1rem;
+  }
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(107, 107, 208, 0.15);
+
+  p {
+    color: rgba(0, 0, 0, 0.6);
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 400;
+  }
+
+  a {
+    color: #6b6bd0;
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+    &:hover {
+      color: #5a5ab8;
+      transform: translateY(-1px);
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #6b6bd0, #5a5ab8);
+      border-radius: 1px;
+      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    &:hover::after {
+      width: 100%;
+    }
+  }
+}
+
+// Mobile responsiveness
+@media (max-width: 768px) {
+  ion-content .ion-padding {
+    padding: 1rem;
+    min-height: 100vh;
+  }
+
+  .auth-container {
+    padding: 2rem 1.5rem;
+    margin: 0.5rem;
+    border-radius: 20px;
+    max-width: 100%;
+  }
+
+  .welcome-text {
+    margin-bottom: 2rem;
+
+    h1 {
+      font-size: 1.8rem;
+      line-height: 1.3;
+    }
+
+    p {
+      font-size: 0.9rem;
+    }
+  }
+
+  .logo-container {
+    height: 100px;
+    margin-bottom: 1.5rem;
+
+    .logo {
+      max-height: 80px;
+      max-width: 180px;
+    }
+
+    .logo-placeholder {
+      font-size: 1rem;
+      padding: 0.8rem 1.5rem;
+    }
+  }
+
+  .modern-input {
+    padding: 1rem 1.2rem;
+    font-size: 0.95rem;
+    border-radius: 14px;
+  }
+
+  .signup-button {
+    --padding-top: 1rem;
+    --padding-bottom: 1rem;
+    font-size: 1rem;
+    border-radius: 14px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 1.5rem 1rem;
+    margin: 0.25rem;
+    border-radius: 16px;
+  }
+
+  .logo-container {
+    height: 80px;
+    margin-bottom: 1rem;
+
+    .logo {
+      max-height: 60px;
+      max-width: 150px;
+    }
+
+    .logo-placeholder {
+      font-size: 0.9rem;
+      padding: 0.6rem 1.2rem;
+      letter-spacing: 1px;
+    }
+  }
+
+  .welcome-text {
+    margin-bottom: 1.5rem;
+
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      font-size: 0.85rem;
+    }
+  }
+
+  .input-group {
+    margin-bottom: 1.2rem;
+  }
+
+  .modern-input {
+    padding: 0.9rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 12px;
+  }
+
+  .signup-button {
+    --padding-top: 0.9rem;
+    --padding-bottom: 0.9rem;
+    font-size: 0.95rem;
+    border-radius: 12px !important;
+    margin-top: 1.2rem;
+  }
+
+  .auth-link {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+
+    p {
+      font-size: 0.85rem;
+    }
+  }
+}
+
+// Extra small screens (320px and below)
+@media (max-width: 320px) {
+  .auth-container {
+    padding: 1rem 0.75rem;
+  }
+
+  .welcome-text h1 {
+    font-size: 1.4rem;
+  }
+
+  .modern-input {
+    padding: 0.8rem 0.9rem;
+    font-size: 0.85rem;
+  }
+}
+

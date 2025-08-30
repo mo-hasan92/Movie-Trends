@@ -1,0 +1,163 @@
+/* ============================================================================
+   GLOBALE ANIMATIONEN
+   Diese Animationen werden in mehreren Komponenten verwendet
+============================================================================ */
+
+/* ============================================================================
+   CARD ANIMATIONS
+   Für Movie Cards, Cinema Cards, Settings Cards, etc.
+============================================================================ */
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================================================
+   NAVIGATION ANIMATIONS
+   Für Bottom Navigation
+============================================================================ */
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes gradientFlow {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes iconPulse {
+  0%, 100% {
+    transform: scale(1.15);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+/* ============================================================================
+   FEEDBACK ANIMATIONS
+   Für Error Messages, Success Messages, etc.
+============================================================================ */
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+  20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+/* ============================================================================
+   LOADING ANIMATIONS
+   Für Skeleton Loaders, Spinner, etc.
+============================================================================ */
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ============================================================================
+   BUTTON HOVER ANIMATIONS
+   Für interaktive Elemente
+============================================================================ */
+
+@keyframes buttonHover {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-2px);
+  }
+}
+
+/* ============================================================================
+   ACCESSIBILITY SUPPORT
+   Reduziert Animationen für Nutzer mit prefers-reduced-motion
+============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Überschreibt spezifische Animationen */
+  @keyframes slideUp {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slideIn {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 1; }
+    to { opacity: 1; }
+  }
+}

@@ -1,0 +1,120 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Meine Watchlist</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="refresh()" [disabled]="isLoading()">
+        <ion-icon [icon]="'refreshOutline'"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="watchlist-content">
+
+  <!-- Searchbar -->
+  <div class="search-container">
+    <ion-searchbar
+      class="modern-searchbar"
+      placeholder="Suche Filme..."
+      [(ngModel)]="searchQuery"
+      (ionInput)="onSearchInput($event)"
+      (ionClear)="onSearchClear()"
+      showClearButton="focus">
+    </ion-searchbar>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error()" class="error-container">
+    <div class="error-content">
+      <ion-icon class="error-icon" [icon]="'alertCircleOutline'"></ion-icon>
+      <h2>Fehler</h2>
+      <p>{{ error() }}</p>
+      <ion-button class="retry-button" (click)="refresh()">Erneut versuchen</ion-button>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!error() && !isLoading() && watchlist().length === 0" class="empty-container">
+    <div class="empty-content">
+      <ion-icon class="empty-icon" [icon]="'filmOutline'"></ion-icon>
+      <h2>Keine Filme in der Watchlist</h2>
+      <p>Füge Filme hinzu, um sie hier zu sehen.</p>
+      <ion-button class="browse-button" routerLink="/browse">Filme durchsuchen</ion-button>
+    </div>
+  </div>
+
+  <!-- Loading Skeleton -->
+  <div *ngIf="isLoading()" class="loading-container">
+    <div class="skeleton" *ngFor="let s of [1,2,3,4,5]">
+      <div class="poster-skeleton">
+        <ion-skeleton-text animated></ion-skeleton-text>
+      </div>
+      <div class="movie-info">
+        <ion-skeleton-text animated style="width: 60%; height: 1.2rem;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 40%; height: 1rem;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 80%; height: 0.8rem;"></ion-skeleton-text>
+      </div>
+    </div>
+  </div>
+
+  <!-- Watchlist Movies -->
+  <div class="movies-container" *ngIf="!isLoading() && filteredWatchlist().length > 0">
+    <div class="stats-card">
+      <div class="stats-content">
+        <div class="stat-item">
+          <ion-icon class="stat-icon" [icon]="'filmOutline'"></ion-icon>
+          <div class="stat-details">
+            <span class="stat-value">{{ movieCount() }}</span>
+            <span class="stat-label">Filme</span>
+          </div>
+        </div>
+        <div class="stat-item">
+          <ion-icon class="stat-icon" [icon]="'star'"></ion-icon>
+          <div class="stat-details">
+            <span class="stat-value">{{ averageRating() }}</span>
+            <span class="stat-label">Ø Bewertung</span>
+          </div>
+        </div>
+
+        <!-- Sort Options -->
+        <div class="sort-options">
+          <ion-button fill="outline" size="small" [disabled]="sortBy() === 'added'" (click)="changeSortBy('added')">Hinzugefügt</ion-button>
+          <ion-button fill="outline" size="small" [disabled]="sortBy() === 'rating'" (click)="changeSortBy('rating')">Bewertung</ion-button>
+          <ion-button fill="outline" size="small" [disabled]="sortBy() === 'title'" (click)="changeSortBy('title')">Titel</ion-button>
+          <ion-button fill="outline" size="small" [disabled]="sortBy() === 'date'" (click)="changeSortBy('date')">Datum</ion-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Movie Cards -->
+    <div class="movie-card" *ngFor="let movie of filteredWatchlist()" (click)="navigateToMovie(movie.id)">
+      <div class="movie-poster">
+        <img [src]="getPosterUrl(movie.poster_path)" (error)="onImageError($event)" class="poster-image" />
+        <div class="rating-badge" [ngClass]="'rating-' + getRatingColor(movie.vote_average)">
+          <ion-icon class="star-icon" [icon]="'star'"></ion-icon>
+          {{ movie.vote_average }}
+        </div>
+        <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+          <ion-fab-button class="remove-button" (click)="removeFromWatchlist(movie.id); $event.stopPropagation()">
+            <ion-icon [icon]="'trashOutline'"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+      </div>
+      <div class="movie-info">
+        <h3 class="movie-title">{{ movie.title }}</h3>
+        <span class="movie-year">{{ getYear(movie.release_date) }}</span>
+        <p class="movie-overview">{{ movie.overview }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clear Watchlist FAB -->
+  <ion-fab vertical="bottom" horizontal="end">
+    <ion-fab-button class="clear-fab" (click)="clearWatchlist()">
+      <ion-icon [icon]="'trashOutline'"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>
+
+<app-bottom-nav></app-bottom-nav>

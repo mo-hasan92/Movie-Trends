@@ -1,62 +1,117 @@
-<ion-header >
-  <ion-toolbar>
-    <ion-title>
-      Trending Movies
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
 
-<ion-content >
-@if (isLoading) {
-  <ion-list>
+<ion-content [fullscreen]="true" (ionScroll)="onScroll($event)">
 
-    @for (i of dummyArray; track $index) {
-      <ion-item lines = "none" class="ion-no-padding">
-        <ion-avatar slot="start">
-          <ion-skeleton-text animated style="width: 50px; height: 50px;"></ion-skeleton-text>
-        </ion-avatar>
-      </ion-item>
-    }
-  </ion-list>
-} @else if (error) {
-  <ion-alert
-    header="Error"
-    [message] ="error"
-    isOpen="true"
-    [buttons]="['OK']"/>
-}
+  <!-- Search -->
+  <div class="search-container">
+    <ion-searchbar
+      [(ngModel)]="searchQuery"
+      (ionInput)="onSearchInput($event)"
+      (ionClear)="onSearchClear()"
+      placeholder="Nach Filmen suchen..."
+      class="modern-searchbar">
+    </ion-searchbar>
+  </div>
 
- <ion-list>
+  <!-- Pull to Refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
-    @for (item of movies; track item.id) {
-      <ion-item button [routerLink]="['/details' , item.id]" >
-        <ion-avatar slot="start">
-          <img [src]= "imageBaseUrl + '/w92' + item.poster_path" alt="Movie Poster"/>
-        </ion-avatar>
-        <ion-label class ="ion-text-wrap">
-          <h2>{{ item.title }}</h2>
-          <p>{{ item.release_date | date: 'mediumDate' }}</p>
-        </ion-label>
-
-        <ion-badge slot="end" color="primary">
-          {{ item.vote_average }}
-        </ion-badge>
-
-      </ion-item>
-    } @empty {
-      @if (!isLoading) {
-        <ion-item lines="none" class="ion-text-center">
-          <ion-label>
-            <h2>No Movies Found</h2>
-          </ion-label>
-        </ion-item>
+  <!-- Loading Skeletons -->
+  @if (isLoading || isSearching) {
+    <div class="movies-grid">
+      @for (item of dummyArray; track $index) {
+        <div class="movie-card skeleton">
+          <div class="movie-poster">
+            <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+          </div>
+          <div class="movie-info">
+            <ion-skeleton-text [animated]="true" style="width: 80%"></ion-skeleton-text>
+            <ion-skeleton-text [animated]="true" style="width: 60%"></ion-skeleton-text>
+            <ion-skeleton-text [animated]="true" style="width: 40%"></ion-skeleton-text>
+          </div>
+        </div>
       }
-    }
-  </ion-list>
+    </div>
+  }
 
-  <ion-infinite-scroll (ionInfinite)="loadMore($event)">
-    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more movies...">
-    </ion-infinite-scroll-content>
+  <!-- Error State -->
+  @else if (error) {
+    <div class="error-container">
+      <div class="error-content">
+        <ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>
+        <h2>Oops! Etwas ist schiefgelaufen</h2>
+        <p>{{ error }}</p>
+        <ion-button (click)="manualRefresh()" class="retry-button">
+          <ion-icon name="refresh-outline" slot="start"></ion-icon>
+          Erneut versuchen
+        </ion-button>
+      </div>
+    </div>
+  }
+
+  <!-- Movies Grid -->
+  @if (!isLoading && !isSearching) {
+    <div class="movies-grid">
+      @for (movie of movies; track trackByMovieId($index, movie)) {
+        <div class="movie-card" [routerLink]="['/details', movie.id]">
+          <!-- Poster -->
+          <div class="movie-poster">
+            <img
+              [src]="imageBaseUrl + '/w500' + movie.poster_path"
+              [alt]="movie.title"
+              (error)="onImageError($event)" />
+            <!-- Rating Badge on Poster -->
+            <div class="rating-badge" [ngClass]="'rating-' + getRatingColor(movie.vote_average)">
+              <ion-icon name="star" class="star-icon"></ion-icon>
+              <span>{{ movie.vote_average | number:'1.1-1' }}</span>
+            </div>
+          </div>
+
+          <!-- Movie Info -->
+          <div class="movie-info">
+            <div class="title-row">
+              <h3>{{ movie.title }}</h3>
+            </div>
+            <p class="release-date">{{ movie.release_date | date: 'y' }}</p>
+            <p class="overview">{{ movie.overview | slice:0:120 }}{{ movie.overview.length > 120 ? '...' : '' }}</p>
+          </div>
+        </div>
+      }
+
+      <!-- Empty State -->
+      @empty {
+        <div class="empty-container">
+          <div class="empty-content">
+            <ion-icon name="film-outline" class="empty-icon"></ion-icon>
+            <h2>Keine Filme gefunden</h2>
+            <p>Versuchen Sie eine andere Suchanfrage</p>
+            @if (searchQuery) {
+              <ion-button (click)="onSearchClear()" class="show-all-button">
+                Alle Filme anzeigen
+              </ion-button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Load More -->
+  <ion-infinite-scroll
+    (ionInfinite)="loadMore($event)"
+    [disabled]="isLoading || isSearching">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
   </ion-infinite-scroll>
 
+  <!-- Scroll to Top Button -->
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="scrollToTop()" class="scroll-top-btn">
+        <ion-icon name="chevron-up-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+
 </ion-content>
+
+<!-- Bottom Navigation -->
+<app-bottom-nav></app-bottom-nav>

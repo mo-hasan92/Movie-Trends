@@ -1,2 +1,112 @@
-// For information on how to create your own theme, please see:
-// http://ionicframework.com/docs/theming/
+/* ============================================================================
+   GLOBALE CSS CUSTOM PROPERTIES
+   Diese Variablen sind in allen Seiten identisch und sollten global sein
+============================================================================ */
+
+:root {
+  /* Hauptfarben */
+  --primary-color: #6b6bd0;
+  --accent-color: #b8222e;
+
+  /* Theme-Farben (unterstützen Theme-Wechsel) */
+  --background-color: var(--theme-background, #ffffff);
+  --surface-color: var(--theme-surface, #f8fafc);
+  --card-color: var(--theme-card, #ffffff);
+  --text-primary: var(--theme-text-primary, #000000);
+  --text-secondary: var(--theme-text-secondary, rgba(0, 0, 0, 0.6));
+  --border-color: var(--theme-border, rgba(107, 107, 208, 0.1));
+  --input-bg: var(--theme-input-bg, #f8fafc);
+
+  /* Schatten */
+  --shadow-light: var(--theme-shadow, 0 4px 20px rgba(107, 107, 208, 0.1));
+  --shadow-medium: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+  /* Status-Farben */
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --danger-color: #ef4444;
+
+  /* Rating-Farben (für Movie-Cards) */
+  --excellent-color: #10b981;
+  --good-color: #f59e0b;
+  --poor-color: #ef4444;
+
+  /* Navigation */
+  --nav-background: rgba(255, 255, 255, 0.8);
+  --nav-border: rgba(255, 255, 255, 0.2);
+  --nav-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --nav-border-radius: 24px;
+  --nav-gap: 2rem;
+  --nav-padding: 0.75rem 1.5rem;
+  --nav-item-color: rgba(0, 0, 0, 0.6);
+  --nav-item-active-color: white;
+  --nav-item-active-bg: linear-gradient(135deg, #6b6bd0 0%, #8a8ae6 50%, #6b6bd0 100%);
+  --nav-icon-size: 1.5rem;
+  --nav-label-size: 0.75rem;
+}
+
+/* ============================================================================
+   DARK THEME SUPPORT
+   Überschreibt die Variablen für Dark Mode
+============================================================================ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-color: #1a1a1a;
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --card-color: #2a2a2a;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --surface-color: #0f0f0f;
+    --input-bg: #2a2a2a;
+
+    /* Navigation Dark Theme */
+    --nav-background: rgba(42, 42, 42, 0.9);
+    --nav-border: rgba(255, 255, 255, 0.1);
+    --nav-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --nav-item-color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+/* ============================================================================
+   THEME-SPEZIFISCHE KLASSEN
+   Für manuellen Theme-Wechsel per JavaScript
+============================================================================ */
+
+/* Cinema Theme */
+body.cinema-theme {
+  --accent-color: #e50914;  /* Netflix Red */
+  --primary-color: #ffd700; /* Gold */
+}
+
+/* Minimal Theme */
+body.minimal-theme {
+  --primary-color: #666666;
+  --accent-color: #333333;
+}
+
+/* Dark Theme Class (für manuellen Wechsel) */
+body.dark-theme {
+  --background-color: #1a1a1a;
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  --card-color: #2a2a2a;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --surface-color: #0f0f0f;
+  --input-bg: #2a2a2a;
+  --nav-background: rgba(42, 42, 42, 0.9);
+  --nav-border: rgba(255, 255, 255, 0.1);
+  --nav-item-color: rgba(255, 255, 255, 0.6);
+}
+
+/* ============================================================================
+   IONIC VARIABLE OVERRIDES
+   Überschreibt Ionic's Standard-Variablen mit unseren Custom Properties
+============================================================================ */
+
+.dark-theme {
+  --ion-background-color: var(--background-color);
+  --ion-text-color: var(--text-primary);
+  --ion-color-step-50: var(--surface-color);
+  --ion-color-step-100: var(--card-color);
+}

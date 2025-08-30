@@ -1,0 +1,258 @@
+
+<ion-content [fullscreen]="true" class="settings-content">
+
+  <!-- Account Card -->
+  <div class="settings-card">
+    <div class="card-header">
+      <div class="card-title">
+        <ion-icon name="person-outline" class="card-icon"></ion-icon>
+        <h2>Konto</h2>
+      </div>
+    </div>
+
+    <div class="card-content">
+      <!-- User Info -->
+      @if (firebaseUser(); as user) {
+        <div class="user-info">
+          <div class="user-avatar">
+            <ion-icon name="person"></ion-icon>
+          </div>
+          <div class="user-details">
+            <h3>{{ user.email }}</h3>
+            <p>Angemeldet seit {{ user.metadata.creationTime | date:'shortDate' }}</p>
+          </div>
+        </div>
+      } @else {
+        <div class="user-info">
+          <div class="user-avatar">
+            <ion-icon name="person-outline"></ion-icon>
+          </div>
+          <div class="user-details">
+            <h3>Nicht angemeldet</h3>
+            <p>Bitte melden Sie sich an</p>
+          </div>
+        </div>
+      }
+
+      <!-- Account Actions -->
+      <div class="settings-actions">
+        <div class="action-item">
+          <div class="action-info">
+            <ion-icon name="mail-outline" class="action-icon"></ion-icon>
+            <div class="action-content">
+              <h4>E-Mail</h4>
+              <p>{{ firebaseUser()?.email || 'Nicht verfügbar' }}</p>
+            </div>
+          </div>
+          <ion-button fill="outline" (click)="openEmailModal()" class="action-button">
+            Ändern
+          </ion-button>
+        </div>
+
+        <div class="action-item">
+          <div class="action-info">
+            <ion-icon name="key-outline" class="action-icon"></ion-icon>
+            <div class="action-content">
+              <h4>Passwort</h4>
+              <p>••••••••••</p>
+            </div>
+          </div>
+          <ion-button fill="outline" (click)="openPasswordModal()" class="action-button">
+            Ändern
+          </ion-button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Security Card -->
+  <div class="settings-card">
+    <div class="card-header">
+      <div class="card-title">
+        <ion-icon name="shield-checkmark-outline" class="card-icon"></ion-icon>
+        <h2>Sicherheit</h2>
+      </div>
+    </div>
+
+    <div class="card-content">
+      <!-- Password for Delete Account -->
+      <div class="form-group">
+        <ion-item class="modern-input">
+          <ion-label position="stacked">Aktuelles Passwort</ion-label>
+          <ion-input
+            [value]="currentPassword()"
+            (ionInput)="currentPassword.set($event.detail.value!)"
+            type="password"
+            placeholder="Passwort für kritische Aktionen">
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <!-- Security Actions -->
+      <div class="security-actions">
+        <!-- GEÄNDERT: Logout mit Bestätigung -->
+        <ion-button
+          expand="block"
+          fill="outline"
+          class="logout-button"
+          (click)="showLogoutConfirmationProgrammatic()">
+          <ion-icon name="log-out-outline" slot="start"></ion-icon>
+          Abmelden
+        </ion-button>
+
+        <ion-button
+          expand="block"
+          fill="solid"
+          color="danger"
+          class="delete-button"
+          (click)="openDeleteAlert()">
+          <ion-icon name="trash-outline" slot="start"></ion-icon>
+          Konto löschen
+        </ion-button>
+      </div>
+
+      <!-- Delete Feedback -->
+      @if (feedbackDeleteMsg()) {
+        <div class="error-message">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          {{ feedbackDeleteMsg() }}
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- EMAIL MODAL -->
+  <ion-modal [isOpen]="showEmailModal()" (didDismiss)="closeEmailModal()">
+    <ng-template>
+      <div class="modal-wrapper">
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>E-Mail ändern</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="closeEmailModal()">
+                <ion-icon name="close-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+
+        <ion-content class="modal-content">
+          <div class="modal-form">
+            <ion-item class="modern-input">
+              <ion-label position="stacked">Neue E-Mail</ion-label>
+              <ion-input
+                [value]="newEmail()"
+                (ionInput)="newEmail.set($event.detail.value!)"
+                type="email"
+                placeholder="Neue E-Mail eingeben">
+              </ion-input>
+            </ion-item>
+
+            <ion-item class="modern-input">
+              <ion-label position="stacked">Aktuelles Passwort</ion-label>
+              <ion-input
+                [value]="currentPassword()"
+                (ionInput)="currentPassword.set($event.detail.value!)"
+                type="password"
+                placeholder="Passwort zur Bestätigung">
+              </ion-input>
+            </ion-item>
+
+            <ion-button
+              expand="block"
+              (click)="saveNewEmail()"
+              [disabled]="isLoadingEmail()"
+              class="save-button">
+              @if (isLoadingEmail()) {
+                <ion-spinner name="crescent"></ion-spinner>
+              }
+              E-Mail speichern
+            </ion-button>
+
+            @if (feedbackEmailMsg()) {
+              <div class="feedback-message"
+                   [ngClass]="feedbackEmailMsg().includes('erfolgreich') ? 'success' : 'error'">
+                <ion-icon [name]="feedbackEmailMsg().includes('erfolgreich') ? 'checkmark-circle-outline' : 'alert-circle-outline'"></ion-icon>
+                {{ feedbackEmailMsg() }}
+              </div>
+            }
+          </div>
+        </ion-content>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <!-- PASSWORD MODAL -->
+  <ion-modal [isOpen]="showPasswordModal()" (didDismiss)="closePasswordModal()">
+    <ng-template>
+      <div class="modal-wrapper">
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>Passwort ändern</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="closePasswordModal()">
+                <ion-icon name="close-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+
+        <ion-content class="modal-content">
+          <div class="modal-form">
+            <ion-item class="modern-input">
+              <ion-label position="stacked">Neues Passwort</ion-label>
+              <ion-input
+                [value]="newPassword()"
+                (ionInput)="newPassword.set($event.detail.value!)"
+                type="password"
+                placeholder="Neues Passwort eingeben">
+              </ion-input>
+            </ion-item>
+
+            <ion-item class="modern-input">
+              <ion-label position="stacked">Aktuelles Passwort</ion-label>
+              <ion-input
+                [value]="currentPassword()"
+                (ionInput)="currentPassword.set($event.detail.value!)"
+                type="password"
+                placeholder="Passwort zur Bestätigung">
+              </ion-input>
+            </ion-item>
+
+            <ion-button
+              expand="block"
+              (click)="saveNewPassword()"
+              [disabled]="isLoadingPassword()"
+              class="save-button">
+              @if (isLoadingPassword()) {
+                <ion-spinner name="crescent"></ion-spinner>
+              }
+              Passwort speichern
+            </ion-button>
+
+            @if (feedbackPasswordMsg()) {
+              <div class="feedback-message"
+                   [ngClass]="feedbackPasswordMsg().includes('erfolgreich') ? 'success' : 'error'">
+                <ion-icon [name]="feedbackPasswordMsg().includes('erfolgreich') ? 'checkmark-circle-outline' : 'alert-circle-outline'"></ion-icon>
+                {{ feedbackPasswordMsg() }}
+              </div>
+            }
+          </div>
+        </ion-content>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <!-- DELETE CONFIRMATION ALERT -->
+  <ion-alert
+    [isOpen]="showDeleteAlert()"
+    header="Konto wirklich löschen?"
+    message="Diese Aktion kann nicht rückgängig gemacht werden. Alle Ihre Daten werden permanent gelöscht."
+    [buttons]="deleteAlertButtons"
+    (didDismiss)="onDeleteAlertDismiss()">
+  </ion-alert>
+
+</ion-content>
+
+<!--Bottom Navigation mit RouterModule -->
+<app-bottom-nav></app-bottom-nav>

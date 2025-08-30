@@ -1,0 +1,215 @@
+
+
+<ion-content [fullscreen]="true" class="cinema-content">
+
+  <!-- Search Section -->
+  <div class="search-section">
+    <div class="search-container">
+      <ion-searchbar
+        class="modern-searchbar"
+        [value]="searchTerm()"
+        (ionInput)="onSearchInput($event)"
+        (ionClear)="onSearchClear()"
+        (keydown)="onSearchKeyPress($event)"
+        placeholder="PLZ oder Stadt eingeben (z.B. 60311, Frankfurt)"
+        showClearButton="focus">
+      </ion-searchbar>
+
+      <ion-button
+        class="search-button"
+        (click)="searchCinemas()"
+        [disabled]="!searchTerm() || isSearching()">
+        @if (isSearching()) {
+          <ion-spinner name="crescent"></ion-spinner>
+        } @else {
+          <ion-icon name="search-outline" slot="start"></ion-icon>
+          Suchen
+        }
+      </ion-button>
+    </div>
+
+    <!-- Search Suggestions -->
+    @if (showSuggestions()) {
+      <div class="suggestions-container">
+        <div class="suggestions-header">
+          <ion-icon name="location-outline"></ion-icon>
+          <span>Beliebte Städte</span>
+        </div>
+        <div class="suggestions-grid">
+          @for (suggestion of suggestions; track suggestion.value) {
+            <div class="suggestion-chip" (click)="selectSuggestion(suggestion)">
+              <ion-icon name="location-outline"></ion-icon>
+              <div class="suggestion-content">
+                <span class="suggestion-value">{{ suggestion.value }}</span>
+                <span class="suggestion-label">{{ suggestion.label }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Loading State -->
+  @if (isSearching()) {
+    <div class="loading-container">
+      @for (skeleton of [1,2,3,4]; track skeleton) {
+        <div class="cinema-card skeleton">
+          <div class="cinema-main">
+            <ion-skeleton-text animated style="width: 70%; height: 1.5rem;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 90%; height: 1rem; margin-top: 0.5rem;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 40%; height: 1rem; margin-top: 0.5rem;"></ion-skeleton-text>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Error State -->
+  @else if (error()) {
+    <div class="error-container">
+      <div class="error-content">
+        <ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>
+        <h2>{{ error()!.code === 'NO_RESULTS' ? 'Keine Kinos gefunden' : 'Fehler beim Suchen' }}</h2>
+        <p>{{ error()!.message }}</p>
+        @if (error()!.code !== 'NO_RESULTS') {
+          <ion-button class="retry-button" (click)="retrySearch()">
+            <ion-icon name="refresh-outline" slot="start"></ion-icon>
+            Erneut versuchen
+          </ion-button>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Results -->
+  @else if (searchResults()) {
+    <div class="results-container">
+      <!-- Results Header -->
+      <div class="results-header">
+        <div class="results-info">
+          <h2>{{ searchResults()!.cinemas.length }} {{ searchResults()!.cinemas.length === 1 ? 'Kino' : 'Kinos' }} gefunden</h2>
+          <p>in {{ searchResults()!.searchLocation }}</p>
+        </div>
+        <div class="results-stats">
+          <span class="query-time">{{ searchResults()!.queryTime }}ms</span>
+        </div>
+      </div>
+
+      <!-- Cinema List -->
+      <div class="cinema-list">
+        @for (cinema of searchResults()!.cinemas; track cinema.id) {
+          <div class="cinema-card">
+            <div class="cinema-main">
+              <!-- Cinema Header -->
+              <div class="cinema-header">
+                <div class="cinema-info">
+                  <h3 class="cinema-name">{{ cinema.name }}</h3>
+                  @if (cinema.operator) {
+                    <span class="cinema-operator">{{ cinema.operator }}</span>
+                  }
+                </div>
+                <div class="distance-badge" [ngClass]="'distance-' + getDistanceColor(cinema.distance)">
+                  <ion-icon name="location-outline"></ion-icon>
+                  <span>{{ cinema.distance }} km</span>
+                </div>
+              </div>
+
+              <!-- Cinema Address -->
+              <div class="cinema-address">
+                <ion-icon name="location-outline" class="address-icon"></ion-icon>
+                <div class="address-content">
+                  <span class="street">{{ cinema.address }}</span>
+                  <span class="city">{{ cinema.city }}{{ cinema.zipCode ? ' ' + cinema.zipCode : '' }}</span>
+                </div>
+              </div>
+
+              <!-- Cinema Details -->
+              @if (hasDetails(cinema)) {
+                <div class="cinema-details">
+                  @if (cinema.openingHours) {
+                    <div class="detail-item">
+                      <ion-icon name="time-outline" class="detail-icon"></ion-icon>
+                      <span>{{ formatOpeningHours(cinema.openingHours) }}</span>
+                    </div>
+                  }
+
+                  @if (cinema.capacity) {
+                    <div class="detail-item">
+                      <ion-icon name="film-outline" class="detail-icon"></ion-icon>
+                      <span>{{ cinema.capacity }} Plätze</span>
+                    </div>
+                  }
+
+                  @if (cinema.wheelchairAccessible) {
+                    <div class="detail-item">
+                      <ion-icon name="accessibility-outline" class="detail-icon"></ion-icon>
+                      <span>Rollstuhlgerecht</span>
+                    </div>
+                  }
+                </div>
+              }
+
+              <!-- Action Buttons -->
+              <div class="cinema-actions">
+                @if (cinema.phone) {
+                  <ion-button
+                    fill="outline"
+                    class="action-button call-button"
+                    (click)="callCinema(cinema)">
+                    <ion-icon name="call-outline" slot="start"></ion-icon>
+                    Anrufen
+                  </ion-button>
+                }
+
+                @if (cinema.website) {
+                  <ion-button
+                    fill="outline"
+                    class="action-button website-button"
+                    (click)="openWebsite(cinema)">
+                    <ion-icon name="globe-outline" slot="start"></ion-icon>
+                    Website
+                  </ion-button>
+                }
+
+                <ion-button
+                  fill="solid"
+                  class="action-button maps-button"
+                  (click)="openInMaps(cinema)">
+                  <ion-icon name="map-outline" slot="start"></ion-icon>
+                  Route
+                </ion-button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Welcome State (before first search) -->
+  @else if (!hasSearched()) {
+    <div class="welcome-container">
+      <div class="welcome-content">
+        <div class="welcome-icon">
+          <ion-icon name="business"></ion-icon>
+        </div>
+        <h2>Kinos in Ihrer Nähe finden</h2>
+        <p>Geben Sie Ihre Postleitzahl oder Stadt ein, um Kinos in der Umgebung zu entdecken.</p>
+
+        <!-- Quick Test Button -->
+        <ion-button
+          class="test-button"
+          fill="outline"
+          (click)="testSearch()">
+          <ion-icon name="search-outline" slot="start"></ion-icon>
+          Frankfurt testen
+        </ion-button>
+      </div>
+    </div>
+  }
+
+</ion-content>
+
+<!-- Bottom Navigation -->
+<app-bottom-nav></app-bottom-nav>

@@ -1,89 +1,234 @@
-<ion-header>
-  <ion-toolbar color="primary">
-  <ion-buttons slot="start">
-    <ion-back-button defaultHref="/home"></ion-back-button>
-  </ion-buttons>
-    <ion-title> {{ movie()?.title }}</ion-title>
-
+<!-- Modern Header -->
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" class="custom-back-button"></ion-back-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
+<ion-content [fullscreen]="true" class="details-content">
 
-<ion-content [fullscreen]="true">
-@if (movie (); as movie ) {
-  <ion-card>
-    <div
-      [style.height.px] = "300"
-    [style.background-image]="'url(' + imageBaseUrl + '/w400' + movie?.poster_path + ')'"> </div>
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <!-- Hero Skeleton -->
+      <div class="skeleton-card">
+        <div class="poster-skeleton">
+          <ion-skeleton-text [animated]="true" style="width: 200px; height: 300px;"></ion-skeleton-text>
+        </div>
+        <div class="content-skeleton">
+          <ion-skeleton-text [animated]="true" style="width: 80%;"></ion-skeleton-text>
+          <ion-skeleton-text [animated]="true" style="width: 60%;"></ion-skeleton-text>
+          <ion-skeleton-text [animated]="true" style="width: 40%;"></ion-skeleton-text>
+        </div>
+      </div>
+    </div>
+  } @else if (error()) {
+    <!-- Error State -->
+    <div class="error-container">
+      <div class="error-content">
+        <ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>
+        <h2>Oops! Fehler beim Laden</h2>
+        <p>{{ error() }}</p>
+        <ion-button (click)="loadMovieData()" class="retry-button">
+          <ion-icon name="refresh-outline" slot="start"></ion-icon>
+          Erneut versuchen
+        </ion-button>
+      </div>
+    </div>
+  } @else if (movie()) {
+    <!-- Movie Content -->
 
+    <!-- Hero Section -->
+    <div class="hero-section">
+      <div class="poster-container">
+        <img
+          [src]="imageBaseUrl + '/w500' + movie()!.poster_path"
+          [alt]="movie()!.title + ' Poster'"
+          (error)="onImageError($event)"
+          class="poster-image">
 
-      <ion-card-header>
-        <ion-card-title>{{ movie?.title }}</ion-card-title>
-        <ion-card-subtitle>{{ movie.tagline}}</ion-card-subtitle>
-        <ion-text color="tertiary">
-        @for (g  of movie.genres; track g.id; let isLast = $last;) {
-          <span> {{ g.name }} {{ !isLast ? ' - ' : '' }}</span>
+        <!-- Rating Badge -->
+        <div class="rating-badge" [ngClass]="'rating-' + getRatingColor(movie()!.vote_average)">
+          <ion-icon name="star" class="star-icon"></ion-icon>
+          <span>{{ movie()!.vote_average | number:'1.1-1' }}</span>
+        </div>
+      </div>
+
+      <div class="movie-info">
+        <h1 class="movie-title">{{ movie()!.title }}</h1>
+
+        @if (movie()!.tagline) {
+          <p class="movie-tagline">{{ movie()!.tagline }}</p>
         }
 
-        </ion-text>
-      </ion-card-header>
+        <!-- Genres -->
+        @if (movie()!.genres && movie()!.genres.length > 0) {
+          <div class="genres-container">
+            @for (genre of getMainGenres(movie()!.genres); track genre.id) {
+              <span class="genre-chip">{{ genre.name }}</span>
+            }
+          </div>
+        }
 
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <!-- Watchlist Button -->
+          <ion-button
+            fill="solid"
+            class="watchlist-button"
+            (click)="toggleWatchlist()">
+            <ion-icon
+              [name]="isInWatchlist() ? 'bookmark' : 'bookmark-outline'"
+              slot="start">
+            </ion-icon>
+            {{ isInWatchlist() ? 'Entfernen' : 'Zur Watchlist' }}
+          </ion-button>
 
-      <!-- Movie details content -->
-      <ion-card-content>
-        <ion-label color = "medium"> {{ movie.overview}}</ion-label>
+          <!-- Trailer Button -->
+          @if (trailer()) {
+            <ion-button
+              fill="outline"
+              class="trailer-button"
+              (click)="playTrailer()">
+              <ion-icon name="play-outline" slot="start"></ion-icon>
+              Trailer
+            </ion-button>
+          }
+        </div>
+      </div>
+    </div>
 
-        <ion-item lines = "none">
-          <ion-icon name="calendar-outline" slot="start"></ion-icon>
-          <ion-label>
-        {{ movie.release_date | date: 'longDate' }}
-          </ion-label>
-        </ion-item>
+    <!-- Overview Card -->
+    @if (movie()!.overview) {
+      <div class="content-card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <ion-icon name="document-text-outline" class="card-icon"></ion-icon>
+            Handlung
+          </h2>
+        </div>
+        <div class="card-content">
+          <p class="overview-text">{{ movie()!.overview }}</p>
+        </div>
+      </div>
+    }
 
-        <ion-item lines = "none">
-          <ion-icon name="cash-outline" slot="start"></ion-icon>
-          <ion-label>
-        {{ movie.budget | currency: 'USD' }}
-          </ion-label>
-        </ion-item>
+    <!-- Movie Details Card -->
+    <div class="content-card">
+      <div class="card-header">
+        <h2 class="card-title">
+          <ion-icon name="information-circle-outline" class="card-icon"></ion-icon>
+          Film-Details
+        </h2>
+      </div>
+      <div class="card-content">
+        <div class="details-grid">
 
-        <ion-item lines = "none">
-          <ion-icon name="star-outline" slot="start"></ion-icon>
-          <ion-label>
-        {{ movie.vote_average | number: '1.1-1' }} ({{ movie.vote_count }})
-          </ion-label>
-        </ion-item>
+          <!-- Release Date -->
+          <div class="detail-item">
+            <ion-icon name="calendar-outline" class="detail-icon"></ion-icon>
+            <div class="detail-content">
+              <span class="detail-label">Veröffentlichung</span>
+              <span class="detail-value">{{ movie()!.release_date | date: 'mediumDate' }}</span>
+            </div>
+          </div>
 
-        <ion-item lines = "none">
-          <ion-icon name="people-outline" slot="start"></ion-icon>
-          <ion-label>
-        {{ movie.adult ? 'Yes' : 'No' }}
-          </ion-label>
-        </ion-item>
+          <!-- Runtime -->
+          @if (movie()!.runtime) {
+            <div class="detail-item">
+              <ion-icon name="time-outline" class="detail-icon"></ion-icon>
+              <div class="detail-content">
+                <span class="detail-label">Laufzeit</span>
+                <span class="detail-value">{{ formatRuntime(movie()!.runtime) }}</span>
+              </div>
+            </div>
+          }
 
-        <ion-item lines = "none">
-          <ion-icon name="film-outline" slot="start"></ion-icon>
-          <ion-label>
-        {{ movie.runtime }} minutes
-          </ion-label>
-        </ion-item>
+          <!-- Budget -->
+          @if (movie()!.budget && movie()!.budget > 0) {
+            <div class="detail-item">
+              <ion-icon name="cash-outline" class="detail-icon"></ion-icon>
+              <div class="detail-content">
+                <span class="detail-label">Budget</span>
+                <span class="detail-value">{{ formatBudget(movie()!.budget) }}</span>
+              </div>
+            </div>
+          }
 
-        <ion-item lines = "none">
-          <ion-icon name="language-outline" slot="start"></ion-icon>
-          <ion-label>
-        {{ movie.original_language | uppercase }}
-          </ion-label>
-        </ion-item>
+          <!-- Rating -->
+          <div class="detail-item">
+            <ion-icon name="star-outline" class="detail-icon"></ion-icon>
+            <div class="detail-content">
+              <span class="detail-label">Bewertung</span>
+              <span class="detail-value">{{ movie()!.vote_average | number:'1.1-1' }}/10</span>
+            </div>
+          </div>
 
-        <ion-item lines = "none">
-          <ion-icon name="link-outline" slot="start"></ion-icon>
-          <ion-label>
-        <a [href]="movie.homepage" target="_blank">{{ movie.homepage }}</a>
-          </ion-label>
-        </ion-item>
+          <!-- Language -->
+          <div class="detail-item">
+            <ion-icon name="language-outline" class="detail-icon"></ion-icon>
+            <div class="detail-content">
+              <span class="detail-label">Sprache</span>
+              <span class="detail-value">{{ movie()!.original_language | uppercase }}</span>
+            </div>
+          </div>
 
-      </ion-card-content>
+          <!-- Status -->
+          @if (movie()!.status) {
+            <div class="detail-item">
+              <ion-icon name="checkmark-circle-outline" class="detail-icon"></ion-icon>
+              <div class="detail-content">
+                <span class="detail-label">Status</span>
+                <span class="detail-value">{{ movie()!.status }}</span>
+              </div>
+            </div>
+          }
 
-  </ion-card>
-}
+        </div>
+
+        <!-- Homepage Link -->
+        @if (movie()!.homepage) {
+          <div class="homepage-link">
+            <ion-button
+              fill="clear"
+              href="{{ movie()!.homepage }}"
+              target="_blank"
+              class="external-link">
+              <ion-icon name="link-outline" slot="start"></ion-icon>
+              Offizielle Website
+              <ion-icon name="open-outline" slot="end"></ion-icon>
+            </ion-button>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Production Companies -->
+    @if (movie()!.production_companies && movie()!.production_companies.length > 0) {
+      <div class="content-card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <ion-icon name="business-outline" class="card-icon"></ion-icon>
+            Produktionsfirmen
+          </h2>
+        </div>
+        <div class="card-content">
+          <div class="companies-grid">
+            @for (company of movie()!.production_companies; track company.id) {
+              <div class="company-item">
+                <h3 class="company-name">{{ company.name }}</h3>
+                @if (company.origin_country) {
+                  <span class="company-country">{{ company.origin_country }}</span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+  }
+
 </ion-content>

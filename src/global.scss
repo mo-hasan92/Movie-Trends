@@ -9,6 +9,12 @@
  * https://ionicframework.com/docs/layout/global-stylesheets
  */
 
+/* Globales Theme-System */
+@use './theme/variables';
+@use './theme/animation';
+@use './theme/common';
+@use './theme/auth';
+
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
 
@@ -35,3 +41,10 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+/* Additional Global Styles */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+}
+

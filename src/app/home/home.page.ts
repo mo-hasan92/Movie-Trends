@@ -24,7 +24,6 @@ import { Component,HostListener , inject, signal, ViewChild } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { BottomNavComponent } from '../components/bottom-nav/bottom-nav.component';
 
-// Firebase Auth importieren
 import { auth } from '../firebase.config';
 import { User } from 'firebase/auth';
 import { addIcons } from 'ionicons';
@@ -36,13 +35,13 @@ import { star, calendarOutline, shareOutline ,arrowUpOutline } from 'ionicons/ic
   imports: [
     IonFabButton, IonFab, IonIcon, IonButton, IonSearchbar,
     IonRefresherContent, IonRefresher, IonInfiniteScroll, IonInfiniteScrollContent,
-     IonSkeletonText,
-     IonContent, DatePipe, DecimalPipe, RouterModule, FormsModule,
-    CommonModule , BottomNavComponent
+    IonSkeletonText, IonContent, DatePipe, DecimalPipe, RouterModule, FormsModule,
+    CommonModule, BottomNavComponent
   ]
 })
 export class HomePage {
 
+  // Dependency Injection des Movie Services
   private movieService = inject(MovieService);
   private currentPage = 1;
   private searchSubject = new Subject<string>();
@@ -55,7 +54,10 @@ export class HomePage {
   public dummyArray = new Array(6); // Mehr Skeleton Items für Grid
   public imageBaseUrl = 'https://image.tmdb.org/t/p';
 
+  // Signal für Scroll-to-Top Button Sichtbarkeit
   showScrollButton = signal<boolean>(false);
+
+  // Referenz auf den IonContent für Scroll-Operations
   @ViewChild(IonContent)
   content!: IonContent;
 
@@ -66,62 +68,67 @@ export class HomePage {
     addIcons({  star,calendarOutline, shareOutline, arrowUpOutline});
     this.loadMovies();
     this.setupSearch();
-    this.checkAuthState();
+    //this.checkAuthState();
   }
 
   // Firebase Auth State prüfen
-  private checkAuthState() {
+/*   private checkAuthState() {
     auth.onAuthStateChanged((user) => {
       this.currentUser = user;
       console.log('User:', user?.email || 'Nicht angemeldet');
     });
-  }
+  } */
 
   // Filme laden
   loadMovies(event?: InfiniteScrollCustomEvent, isRefresh = false) {
     this.error = null;
 
+    // Loading State setzen
     if (!event && !isRefresh) {
       this.isLoading = true;
     }
-
+    // Entscheiden ob Suche oder Top Rated
     const apiCall = this.searchQuery.trim()
       ? this.movieService.searchMovies(this.searchQuery, this.currentPage)
       : this.movieService.getTopRatedMovies(this.currentPage);
 
-    apiCall.pipe(
-      finalize(() => {
-        this.isLoading = false;
-        this.isSearching = false;
-        if (event) event.target.complete();
-      }),
-      catchError((err: any) => {
-        console.error('API Fehler:', err);
-        this.error = 'Fehler beim Laden der Filme. Bitte versuchen Sie es erneut.';
-        return [];
-      })
-    ).subscribe(res => {
-      if (isRefresh || this.currentPage === 1) {
-        this.movies = [];
-      }
+      // API Call mit RxJS Operators
+      apiCall.pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.isSearching = false;
+          if (event) event.target.complete();
+        }),
+        catchError((err: any) => {
+          console.error('API Fehler:', err);
+          this.error = 'Fehler beim Laden der Filme. Bitte versuchen Sie es erneut.';
+          return [];
+        })
+      ).subscribe(res => {
+        // Bei Refresh oder erster Seite Array leeren
+        if (isRefresh || this.currentPage === 1) {
+          this.movies = [];
+        }
 
-      if (res && res.results) {
-        this.movies.push(...res.results);
-      }
+        // Filme zum Array hinzufügen
+        if (res && res.results) {
+          this.movies.push(...res.results);
+        }
 
-      if (event) {
-        event.target.disabled = res?.total_pages === this.currentPage;
-      }
-    });
+        // Infinite Scroll deaktivieren wenn keine weiteren Seiten
+        if (event) {
+          event.target.disabled = res?.total_pages === this.currentPage;
+        }
+      });
   }
 
-  // Mehr Filme laden
+  // Mehr Filme laden (Infinite Scroll)
   loadMore(event: InfiniteScrollCustomEvent) {
     this.currentPage++;
     this.loadMovies(event);
   }
 
-  // Refresh
+  // Pull-to-Refresh Handler
   handleRefresh(event: any) {
     this.currentPage = 1;
     this.loadMovies(undefined, true);
@@ -132,7 +139,7 @@ export class HomePage {
     }, 1000);
   }
 
-  // Suche setup
+  // Such-Funktionalität setupen mit Debounce
   private setupSearch() {
     this.searchSubject.pipe(
       debounceTime(500),
@@ -144,7 +151,7 @@ export class HomePage {
     });
   }
 
-  // Suche eingabe
+  // Sucheingabe Handler
   onSearchInput(event: any) {
     const query = event.target.value || '';
     this.isSearching = true;
@@ -171,7 +178,7 @@ export class HomePage {
     return movie.id;
   }
 
-  // Image fallback für fehlende Poster
+  // Image Fallback für fehlende Poster
   onImageError(event: any) {
     const target = event.target;
     // Fallback zu einem Standard-Bild oder Platzhalter
@@ -194,20 +201,22 @@ export class HomePage {
     }
   }
 
-@HostListener('window:scroll', ['$event']) onWindowScroll() {
-  // 1. Show/Hide Scroll to Top Button
-  const yOffset = window.pageYOffset;
-  const showButton = yOffset > 400; // Show button after scrolling 400px
-  this.showScrollButton.set(showButton);
+    ionViewDidEnter() {
+      if (this.content) {
+        this.content.getScrollElement().then(scrollElement => {
+          scrollElement.addEventListener('scroll', this.handleScroll.bind(this));
+        });
+      }
+    }
 
-  // 2. Trigger Infinite Scroll
-  const scrollPosition = window.innerHeight + window.pageYOffset;
-  const documentHeight = document.documentElement.scrollHeight;
-  console.log('Scroll Position:', scrollPosition);
-  console.log('Document Height:', documentHeight);
+    private handleScroll(event: any) {
+      const scrollElement = event.target;
+      const scrollTop = scrollElement.scrollTop;
 
+      // Show/hide scroll to top button
+      this.showScrollButton.set(scrollTop > 400);
+    }
 
-}
 
   // Utility method für bessere Fehlerbehandlung
   private handleError(error: any, defaultMessage: string): string {

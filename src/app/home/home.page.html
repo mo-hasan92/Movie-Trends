@@ -35,7 +35,7 @@
     </div>
   }
 
-  <!-- Error State -->
+  <!-- Fehler-Anzeige falls API Call fehlschlägt -->
   @else if (error) {
     <div class="error-container">
       <div class="error-content">
@@ -50,18 +50,19 @@
     </div>
   }
 
-  <!-- Movies Grid -->
+  <!-- Haupt-Filmgrid wenn Daten geladen sind -->
   @if (!isLoading && !isSearching) {
     <div class="movies-grid">
+       <!-- Loop durch alle Filme mit Performance Tracking -->
       @for (movie of movies; track trackByMovieId($index, movie)) {
         <div class="movie-card" [routerLink]="['/details', movie.id]">
-          <!-- Poster -->
+           <!-- Film Poster mit Rating Badge -->
           <div class="movie-poster">
             <img
               [src]="imageBaseUrl + '/w500' + movie.poster_path"
               [alt]="movie.title"
               (error)="onImageError($event)" />
-            <!-- Rating Badge on Poster -->
+            <!-- Dynamisches Rating Badge basierend auf Score -->
             <div class="rating-badge" [ngClass]="'rating-' + getRatingColor(movie.vote_average)">
               <ion-icon name="star" class="star-icon"></ion-icon>
               <span>{{ movie.vote_average | number:'1.1-1' }}</span>
@@ -97,14 +98,14 @@
     </div>
   }
 
-  <!-- Load More -->
+  <!-- Infinite Scroll für automatisches Nachladen -->
   <ion-infinite-scroll
     (ionInfinite)="loadMore($event)"
     [disabled]="isLoading || isSearching">
     <ion-infinite-scroll-content></ion-infinite-scroll-content>
   </ion-infinite-scroll>
 
-  <!-- Scroll to Top Button -->
+  <!-- Scroll-to-Top Button (nur sichtbar wenn gescrollt) -->
    @if (showScrollButton()) {
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
       <ion-fab-button (click)="scrollToTop()" class="scroll-top-btn">

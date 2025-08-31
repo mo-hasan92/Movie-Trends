@@ -39,19 +39,19 @@ import { catchError, firstValueFrom, forkJoin, of } from 'rxjs';
 })
 export class DetailsPage {
 
-  // Services - KORREKT: Auth als Instanz, nicht als Methode
+  //  SERVICE INJECTIONS
   private movieService = inject(MovieService);
   private watchlistService = inject(WatchlistService);
-  private auth = inject(Auth); // <- KORRIGIERT: Auth Instanz
+  private auth = inject(Auth);
   private firestore = inject(Firestore);
-  private router = inject(Router); // <- HINZUGEFÜGT: Router
+  private router = inject(Router);
 
-  // Configuration - Nutzung der Interface-Konstanten
+  //  KONFIGURATION - Bildgrößen und Bewertungsgrenzen
   public imageBaseUrl = 'https://image.tmdb.org/t/p';
   public imageSizes = TMDB_IMAGE_SIZES;
   public ratingThresholds = RATING_THRESHOLDS;
 
-  // State Management mit besserer Typisierung
+  //  STATE MANAGEMENT MIT SIGNALS
   public movie: WritableSignal<MovieResult | null> = signal(null);
   public cast: WritableSignal<CastMember[]> = signal([]);
   public crew: WritableSignal<CrewMember[]> = signal([]);
@@ -61,15 +61,15 @@ export class DetailsPage {
   public error: WritableSignal<string | null> = signal(null);
   public isInWatchlist: WritableSignal<boolean> = signal(false);
 
-  // Computed Properties mit Interface-Helpers
-  public mainCast = computed(() => getMainCast(this.cast(), 6));
+  //  COMPUTED PROPERTIES FÜR ABGELEITETE DATEN
+  public mainCast = computed(() => getMainCast(this.cast(), 6));// Top 6 Schauspieler
   public director = computed(() => getDirector(this.crew()));
   public trailer = computed(() => {
     const videos = this.videos();
-    return videos.find(video => isTrailer(video)) || null;
+    return videos.find(video => isTrailer(video)) || null;// Ersten Trailer finden
   });
 
-  // Weitere Computed Properties
+  //  VALIDIERUNGEN
   public isValidMovie = computed(() => {
     const movie = this.movie();
     return movie ? isCompleteMovieResult(movie) : false;
@@ -77,7 +77,7 @@ export class DetailsPage {
 
   public mainGenres = computed(() => {
     const movie = this.movie();
-    return movie?.genres?.slice(0, 3) || [];
+    return movie?.genres?.slice(0, 3) || []; // Erste 3 Genres
   });
 
   public productionCompanies = computed(() => {
@@ -85,12 +85,12 @@ export class DetailsPage {
     return movie?.production_companies || [];
   });
 
-  // Aktuelle Movie ID für Reload
+  //  MOVIE ID FÜR RELOAD-ZWECKE
   private currentMovieId: string = '';
 
-  /**
-   * Input Property - Movie ID Setter
-   * Lädt alle Movie-Daten wenn ID gesetzt wird
+ /**
+   *  INPUT SETTER - Wird gesetzt wenn Navigation stattfindet
+   * Lädt automatisch alle Film-Daten wenn die ID sich ändert
    */
   @Input()
   set id(movieId: string) {
@@ -111,12 +111,12 @@ export class DetailsPage {
       globeOutline, trophyOutline, personOutline, videocamOutline
     });
 
-    // Firebase Connection Test
-    this.testFirebaseConnection();
+    //  FIREBASE VERBINDUNGSTEST (Nur für Debugging)
+    //this.testFirebaseConnection();
   }
 
-  // Firebase Test Methode
-  async testFirebaseConnection(): Promise<void> {
+  //  FIREBASE CONNECTION TEST (Debugging)
+/*   async testFirebaseConnection(): Promise<void> {
     try {
       console.log('Testing Firebase connection...');
       console.log('Auth instance:', this.auth);
@@ -153,9 +153,10 @@ export class DetailsPage {
       console.error('Full error:', error);
     }
   }
+ */
 
-  // Separate Firestore Test Methode
-  private async performFirestoreTest(user: any): Promise<void> {
+  //  FIRESTORE TEST METHODE (Debugging)
+/*   private async performFirestoreTest(user: any): Promise<void> {
     try {
       // Firestore Test
       const testRef = doc(this.firestore, 'test', 'connection');
@@ -191,10 +192,11 @@ export class DetailsPage {
         console.error('Firestore database not found - create database in Firebase Console');
       }
     }
-  }
+  } */
 
   /**
-   * Watchlist-Status prüfen
+   * 📋 WATCHLIST-STATUS PRÜFEN
+   * Überprüft ob der aktuelle Film in der Watchlist ist
    */
   async checkWatchlist(movieId: string): Promise<void> {
     try {
@@ -217,7 +219,8 @@ export class DetailsPage {
   }
 
   /**
-   * Film zur Watchlist hinzufügen/entfernen
+   *  FILM ZUR WATCHLIST HINZUFÜGEN/ENTFERNEN
+   * Toggle-Funktion für die Watchlist
    */
   async toggleWatchlist(): Promise<void> {
     const movie = this.movie();
@@ -258,7 +261,8 @@ export class DetailsPage {
   }
 
   /**
-   * Lädt alle Movie-Daten parallel mit verbesserter Typisierung
+   *  LÄDT ALLE FILM-DATEN PARALLEL
+   * Verwendet forkJoin für parallele API-Calls
    */
   public loadMovieData(movieId?: string): void {
     const id = movieId || this.currentMovieId;
@@ -313,10 +317,12 @@ export class DetailsPage {
             return;
           }
 
+          //  CAST & CREED DATEN SETZEN
           this.cast.set(data.credits.cast || []);
           this.crew.set(data.credits.crew || []);
           this.videos.set(data.videos.results || []);
 
+          //  ÄHNLICHE FILME
           const similarItems: MovieListItem[] = (data.similar.results || []).map(movie => ({
             id: movie.id,
             title: movie.title,
@@ -336,7 +342,7 @@ export class DetailsPage {
   }
 
   /**
-   * Verbesserte Fehlerbehandlung
+   *  FEHLERBEHANDLUNG MIT SPEZIFISCHEN NACHRICHTEN
    */
   private getErrorMessage(error: any): string {
     if (error?.status === 404) {
@@ -512,9 +518,11 @@ export class DetailsPage {
     return `data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjQ1MCIgdmlld0JveD0iMCAwIDMwMCA0NTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iNDUwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xNTAgMjI1QzE2Ni41NjkgMjI1IDE4MCAyMTEuNTY5IDE4MCAxOTVDMTgwIDE3OC40MzEgMTY2LjU2OSAxNjUgMTUwIDE2NUMxMzMuNDMxIDE2NSAxMjAgMTc4LjQzMSAxMjAgMTk1QzEyMCAyMTEuNTY5IDEzMy40MzEgMjI1IDE1MCAyMjVaIiBmaWxsPSIjRDFEM0Q3Ci8+CjxwYXRoIGQ9Ik05MCAyODVDOTAgMjc2LjE2NCA5Ny4xNjQgMjY5IDEwNiAyNjlIMTk0QzIwMi44MzYgMjY5IDIxMCAyNzYuMTY0IDIxMCAyODVWMzE1SDkwVjI4NVoiIGZpbGw9IiNEMUQzRDciLz4KPC9zdmc+`;
   }
 
-/**
- * Share Movie mit Web Share API + Clipboard Fallback
- */
+  /**
+   *  TEILEN-FUNKTION MIT WEB SHARE API
+   *  FUNKTIONIERT AUF HANDYS MIT NATIVER SHARE-DIALOG
+   * FALLBACK: CLIPBOARD FÜR DESKTOP
+   */
 async shareMovie(): Promise<void> {
   const movie = this.movie();
   if (!movie) return;
@@ -581,20 +589,14 @@ isWebShareSupported(): boolean {
   }
 
   /**
-   * Get Language Name
+   *  SPRACHNAME AUS SPRACHCODE
    */
   getLanguageName(languageCode: string): string {
     const languages: { [key: string]: string } = {
-      'en': 'Englisch',
-      'de': 'Deutsch',
-      'fr': 'Französisch',
-      'es': 'Spanisch',
-      'it': 'Italienisch',
-      'ja': 'Japanisch',
-      'ko': 'Koreanisch',
-      'zh': 'Chinesisch'
+      'en': 'Englisch', 'de': 'Deutsch', 'fr': 'Französisch',
+      'es': 'Spanisch', 'it': 'Italienisch', 'ja': 'Japanisch',
+      'ko': 'Koreanisch', 'zh': 'Chinesisch'
     };
-
     return languages[languageCode] || languageCode.toUpperCase();
   }
 

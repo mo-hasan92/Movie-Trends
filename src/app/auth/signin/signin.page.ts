@@ -6,27 +6,20 @@ import { Router } from '@angular/router';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from 'src/app/firebase.config';
 
-// Definition der Angular-Komponente
 @Component({
-    selector: 'app-signin', // Der HTML-Selektor für diese Komponente
-    templateUrl: './signin.page.html', // Der Pfad zur HTML-Vorlage der Komponente
-    styleUrls: ['./signin.page.scss'], // Gibt an, dass dies eine eigenständige Komponente ist (ab Angular 14)
-    // Importiert notwendige Ionic-Module und Angular-Module für die Komponente
+    selector: 'app-signin',
+    templateUrl: './signin.page.html',
+    styleUrls: ['./signin.page.scss'],
     imports: [IonButton, IonContent, FormsModule]
 })
 
-// Exportiert die SigninPage-Klasse, die die Logik für die Anmeldeseite enthält
 export class SigninPage implements OnInit {
 
-  // Variablen für E-Mail, Passwort und Fehlermeldungen
   email: string = '';
   password: string = '';
   error: string = '';
 
-  // Konstruktor der Klasse, injiziert den Router für die Navigation
   constructor(private router: Router) { }
-
-  // ngOnInit ist eine Lifecycle-Methode, die nach der Initialisierung der Komponente aufgerufen wird
   ngOnInit() {}
 
   // Methode zum Übersetzen der Firebase-Fehlercodes in deutsche Nachrichten

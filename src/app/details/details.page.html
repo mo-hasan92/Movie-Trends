@@ -9,7 +9,7 @@
 
 <ion-content [fullscreen]="true" class="details-content">
 
-  <!-- Loading State -->
+   <!--  LOADING STATE - Skeletons während Daten geladen werden -->
   @if (isLoading()) {
     <div class="loading-container">
       <!-- Hero Skeleton -->
@@ -24,7 +24,9 @@
         </div>
       </div>
     </div>
-  } @else if (error()) {
+  }
+
+  @else if (error()) {
     <!-- Error State -->
     <div class="error-container">
       <div class="error-content">
@@ -37,33 +39,35 @@
         </ion-button>
       </div>
     </div>
-  } @else if (movie()) {
-    <!-- Movie Content -->
+  }
+    <!--  MOVIE CONTENT - Hauptinhalt wenn Daten geladen -->
 
-    <!-- Hero Section -->
-    <div class="hero-section">
-      <div class="poster-container">
-        <img
-          [src]="imageBaseUrl + '/w500' + movie()!.poster_path"
-          [alt]="movie()!.title + ' Poster'"
-          (error)="onImageError($event)"
-          class="poster-image">
+    @else if (movie()) {
+      <!--  HERO SECTION - Poster, Titel, Actions -->
+      <div class="hero-section">
+        <div class="poster-container">
+          <img
+            [src]="imageBaseUrl + '/w500' + movie()!.poster_path"
+            [alt]="movie()!.title + ' Poster'"
+            (error)="onImageError($event)"
+            class="poster-image">
 
-        <!-- Rating Badge -->
-        <div class="rating-badge" [ngClass]="'rating-' + getRatingColor(movie()!.vote_average)">
-          <ion-icon name="star" class="star-icon"></ion-icon>
-          <span>{{ movie()!.vote_average | number:'1.1-1' }}</span>
+          <!--  RATING BADGE - Dynamische Farbe basierend auf Score -->
+          <div class="rating-badge" [ngClass]="'rating-' + getRatingColor(movie()!.vote_average)">
+            <ion-icon name="star" class="star-icon"></ion-icon>
+            <span>{{ movie()!.vote_average | number:'1.1-1' }}</span>
+          </div>
         </div>
-      </div>
 
       <div class="movie-info">
         <h1 class="movie-title">{{ movie()!.title }}</h1>
 
+        <!--  TAGLINE (falls vorhanden) -->
         @if (movie()!.tagline) {
           <p class="movie-tagline">{{ movie()!.tagline }}</p>
         }
 
-        <!-- Genres -->
+        <!--  GENRES - Erste 3 Genres anzeigen -->
         @if (movie()!.genres && movie()!.genres.length > 0) {
           <div class="genres-container">
             @for (genre of getMainGenres(movie()!.genres); track genre.id) {
@@ -72,9 +76,9 @@
           </div>
         }
 
-        <!-- Action Buttons -->
+        <!--  ACTION BUTTONS - Interaktive Buttons -->
         <div class="action-buttons">
-          <!-- Watchlist Button -->
+          <!--  WATCHLIST BUTTON - Toggle-Funktion -->
           <ion-button
             fill="solid"
             class="watchlist-button"
@@ -86,7 +90,7 @@
             {{ isInWatchlist() ? 'Entfernen' : 'Zur Watchlist' }}
           </ion-button>
 
-          <!-- Trailer Button -->
+          <!--  TRAILER BUTTON - Nur anzeigen wenn Trailer vorhanden -->
           @if (trailer()) {
             <ion-button
               fill="outline"
@@ -96,8 +100,7 @@
               Trailer
             </ion-button>
           }
-
-            <!-- Share Button -->
+            <!--  SHARE BUTTON - Web Share API mit Clipboard Fallback -->
             <ion-button
               fill="outline"
               class="share-button"
@@ -109,7 +112,7 @@
       </div>
     </div>
 
-    <!-- Overview Card -->
+    <!-- OVERVIEW CARD - Filmbeschreibung -->
     @if (movie()!.overview) {
       <div class="content-card">
         <div class="card-header">
@@ -124,7 +127,7 @@
       </div>
     }
 
-    <!-- Movie Details Card -->
+    <!-- MOVIE DETAILS CARD - Technische Details -->
     <div class="content-card">
       <div class="card-header">
         <h2 class="card-title">
@@ -213,6 +216,37 @@
         }
       </div>
     </div>
+
+    <!--  CAST SECTION - Schauspieler und Besetzung -->
+    @if (cast() && cast().length > 0) {
+      <div class="content-card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <ion-icon name="people-outline" class="card-icon"></ion-icon>
+            Schauspieler
+          </h2>
+        </div>
+        <div class="card-content">
+          <div class="cast-grid">
+            @for (actor of mainCast(); track actor.id) {
+              <div class="cast-item">
+                <div class="actor-image-container">
+                  <img
+                    [src]="getProfileUrl(actor.profile_path)"
+                    [alt]="actor.name"
+                    (error)="onImageError($event, 'profile')"
+                    class="actor-image">
+                </div>
+                <div class="actor-info">
+                  <h3 class="actor-name">{{ actor.name }}</h3>
+                  <p class="actor-character">{{ actor.character }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
 
     <!-- Production Companies -->
     @if (movie()!.production_companies && movie()!.production_companies.length > 0) {

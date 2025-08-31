@@ -16,17 +16,16 @@ import {
 import { BottomNavComponent } from '../../components/bottom-nav/bottom-nav.component';
 
 @Component({
-  selector: 'app-watchlist',
-  templateUrl: './watchlist.page.html',
-  styleUrls: ['./watchlist.page.scss'],
-  standalone: true,
-  imports: [
-    CommonModule, FormsModule,
-    IonContent, IonHeader, IonTitle, IonToolbar, IonButton,
-    BottomNavComponent,
-    IonIcon, IonSkeletonText, IonFab, IonFabButton,
-    IonButtons, IonSearchbar , RouterLink
-  ]
+    selector: 'app-watchlist',
+    templateUrl: './watchlist.page.html',
+    styleUrls: ['./watchlist.page.scss'],
+    imports: [
+        CommonModule, FormsModule,
+        IonContent, IonHeader, IonTitle, IonToolbar, IonButton,
+        BottomNavComponent,
+        IonIcon, IonSkeletonText, IonFab, IonFabButton,
+        IonButtons, IonSearchbar, RouterLink
+    ]
 })
 export class WatchlistPage implements OnDestroy {
 

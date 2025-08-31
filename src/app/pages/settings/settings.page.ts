@@ -21,16 +21,15 @@ import {
    person, alertCircleOutline} from 'ionicons/icons';
 
 @Component({
-  selector: 'app-settings',
-  templateUrl: './settings.page.html',
-  styleUrls: ['./settings.page.scss'],
-  standalone: true,
-  imports: [
-    IonSpinner, CommonModule, FormsModule, IonButton, IonIcon, IonLabel,
-    IonItem,
-    IonButtons, IonContent, IonHeader, IonTitle, IonToolbar,
-    IonInput, IonModal, IonAlert , BottomNavComponent
-  ]
+    selector: 'app-settings',
+    templateUrl: './settings.page.html',
+    styleUrls: ['./settings.page.scss'],
+    imports: [
+        IonSpinner, CommonModule, FormsModule, IonButton, IonIcon, IonLabel,
+        IonItem,
+        IonButtons, IonContent, IonHeader, IonTitle, IonToolbar,
+        IonInput, IonModal, IonAlert, BottomNavComponent
+    ]
 })
 export class SettingsPage {
 

@@ -8,12 +8,11 @@ import { auth } from 'src/app/firebase.config';
 
 // Definition der Angular-Komponente
 @Component({
-  selector: 'app-signin', // Der HTML-Selektor für diese Komponente
-  templateUrl: './signin.page.html', // Der Pfad zur HTML-Vorlage der Komponente
-  styleUrls: ['./signin.page.scss'], // Der Pfad zu den CSS-Stilen der Komponente
-  standalone: true, // Gibt an, dass dies eine eigenständige Komponente ist (ab Angular 14)
-  // Importiert notwendige Ionic-Module und Angular-Module für die Komponente
-  imports: [IonButton, IonContent, FormsModule]
+    selector: 'app-signin', // Der HTML-Selektor für diese Komponente
+    templateUrl: './signin.page.html', // Der Pfad zur HTML-Vorlage der Komponente
+    styleUrls: ['./signin.page.scss'], // Gibt an, dass dies eine eigenständige Komponente ist (ab Angular 14)
+    // Importiert notwendige Ionic-Module und Angular-Module für die Komponente
+    imports: [IonButton, IonContent, FormsModule]
 })
 
 // Exportiert die SigninPage-Klasse, die die Logik für die Anmeldeseite enthält

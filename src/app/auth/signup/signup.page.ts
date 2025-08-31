@@ -12,11 +12,10 @@ import { auth } from 'src/app/firebase.config';
 
 
 @Component({
-  selector: 'app-signup', // Name des Selektors für diese Komponente
-  templateUrl: './signup.page.html', // HTML-Template
-  styleUrls: ['./signup.page.scss'], // Styles für diese Seite
-  standalone: true, // ermöglicht Standalone-Komponenten (ohne Module)
-  imports: [IonButton, IonContent, FormsModule]
+    selector: 'app-signup', // Name des Selektors für diese Komponente
+    templateUrl: './signup.page.html', // HTML-Template
+    styleUrls: ['./signup.page.scss'], // ermöglicht Standalone-Komponenten (ohne Module)
+    imports: [IonButton, IonContent, FormsModule]
 })
 export class SignupPage implements OnInit {
 

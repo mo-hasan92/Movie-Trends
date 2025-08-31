@@ -28,15 +28,14 @@ import { addIcons } from 'ionicons';
 import { catchError, firstValueFrom, forkJoin, of } from 'rxjs';
 
 @Component({
-  selector: 'app-details',
-  templateUrl: './details.page.html',
-  styleUrls: ['./details.page.scss'],
-  standalone: true,
-  imports: [
-    IonSkeletonText, IonButton, IonIcon, IonBackButton,
-    IonButtons, IonContent, IonHeader, IonToolbar,
-    CommonModule, FormsModule, DatePipe, DecimalPipe, UpperCasePipe
-  ]
+    selector: 'app-details',
+    templateUrl: './details.page.html',
+    styleUrls: ['./details.page.scss'],
+    imports: [
+        IonSkeletonText, IonButton, IonIcon, IonBackButton,
+        IonButtons, IonContent, IonHeader, IonToolbar,
+        CommonModule, FormsModule, DatePipe, DecimalPipe, UpperCasePipe
+    ]
 })
 export class DetailsPage {
 

@@ -17,15 +17,14 @@ import {
   home, bookmark, person, business, accessibilityOutline } from 'ionicons/icons';
 
 @Component({
-  selector: 'app-cinema',
-  templateUrl: './cinema.page.html',
-  styleUrls: ['./cinema.page.scss'],
-  standalone: true,
-  imports: [
-    CommonModule, FormsModule,
-    IonContent,  IonButton, IonIcon, BottomNavComponent ,
-    IonSpinner, IonSkeletonText, IonSearchbar
-  ]
+    selector: 'app-cinema',
+    templateUrl: './cinema.page.html',
+    styleUrls: ['./cinema.page.scss'],
+    imports: [
+        CommonModule, FormsModule,
+        IonContent, IonButton, IonIcon, BottomNavComponent,
+        IonSpinner, IonSkeletonText, IonSearchbar
+    ]
 })
 export class CinemaPage {
 

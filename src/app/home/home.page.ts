@@ -20,7 +20,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component,HostListener , inject, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BottomNavComponent } from '../components/bottom-nav/bottom-nav.component';
 
@@ -28,7 +28,7 @@ import { BottomNavComponent } from '../components/bottom-nav/bottom-nav.componen
 import { auth } from '../firebase.config';
 import { User } from 'firebase/auth';
 import { addIcons } from 'ionicons';
-import { star, home, bookmark, person, settings, business,calendarOutline, shareOutline } from 'ionicons/icons';
+import { star, calendarOutline, shareOutline ,arrowUpOutline } from 'ionicons/icons';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -55,7 +55,7 @@ export class HomePage {
   public dummyArray = new Array(6); // Mehr Skeleton Items für Grid
   public imageBaseUrl = 'https://image.tmdb.org/t/p';
 
-  public showScrollTop = false;
+  showScrollButton = signal<boolean>(false);
   @ViewChild(IonContent)
   content!: IonContent;
 
@@ -63,7 +63,7 @@ export class HomePage {
   public currentUser: User | null = null;
 
   constructor() {
-    addIcons({  star, home, bookmark, person, settings, calendarOutline, shareOutline,business});
+    addIcons({  star,calendarOutline, shareOutline, arrowUpOutline});
     this.loadMovies();
     this.setupSearch();
     this.checkAuthState();
@@ -190,15 +190,24 @@ export class HomePage {
   scrollToTop() {
     if (this.content) {
       this.content.scrollToTop(500);
+
     }
   }
 
-  // Listener für Scroll-Event um Scroll-to-Top Button zu zeigen/verstecken
-  onScroll(event: any) {
-    const scrollTop = event.detail.scrollTop || 0;
-    console.log('ScrollTop:', scrollTop);
-    this.showScrollTop = scrollTop > 300; // Button erscheint bereits nach 300px scrollen
-  }
+@HostListener('window:scroll', ['$event']) onWindowScroll() {
+  // 1. Show/Hide Scroll to Top Button
+  const yOffset = window.pageYOffset;
+  const showButton = yOffset > 400; // Show button after scrolling 400px
+  this.showScrollButton.set(showButton);
+
+  // 2. Trigger Infinite Scroll
+  const scrollPosition = window.innerHeight + window.pageYOffset;
+  const documentHeight = document.documentElement.scrollHeight;
+  console.log('Scroll Position:', scrollPosition);
+  console.log('Document Height:', documentHeight);
+
+
+}
 
   // Utility method für bessere Fehlerbehandlung
   private handleError(error: any, defaultMessage: string): string {
@@ -224,3 +233,4 @@ export class HomePage {
     this.searchSubject.complete();
   }
 }
+

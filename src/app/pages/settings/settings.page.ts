@@ -1,12 +1,11 @@
 import { Component, inject, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink, RouterLinkActive  } from '@angular/router';
+import { Router } from '@angular/router';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonItem, IonLabel,
   IonIcon, IonButton, IonInput, IonModal, IonSpinner, IonAlert,
-  AlertController
-} from '@ionic/angular/standalone';
+  AlertController, IonToggle } from '@ionic/angular/standalone';
 import { Auth, authState, User } from '@angular/fire/auth';
 import {
   updateEmail, updatePassword, reauthenticateWithCredential,
@@ -19,7 +18,7 @@ import { addIcons } from 'ionicons';
 import {
   personOutline, mailOutline, keyOutline, closeOutline,
   shieldCheckmarkOutline, logOutOutline, trashOutline,
-  home, bookmark, person, alertCircleOutline ,business} from 'ionicons/icons';
+   person, alertCircleOutline} from 'ionicons/icons';
 
 @Component({
   selector: 'app-settings',
@@ -86,7 +85,7 @@ export class SettingsPage {
 
   constructor() {
     // Icons registrieren
-    addIcons({personOutline,person,mailOutline,keyOutline,shieldCheckmarkOutline,logOutOutline,business,trashOutline,alertCircleOutline,closeOutline,home,bookmark});
+    addIcons({personOutline,person,mailOutline,keyOutline, shieldCheckmarkOutline,logOutOutline,trashOutline,alertCircleOutline,closeOutline});
 
     // Auth State Listener
     this.initAuthState();
@@ -274,4 +273,10 @@ export class SettingsPage {
   onLogoutAlertDismiss(): void {
     this.showLogoutAlert.set(false);
   }
+
+
+
+
 }
+
+

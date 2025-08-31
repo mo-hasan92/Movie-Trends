@@ -39,7 +39,7 @@
       <ion-icon class="empty-icon" [icon]="'filmOutline'"></ion-icon>
       <h2>Keine Filme in der Watchlist</h2>
       <p>Füge Filme hinzu, um sie hier zu sehen.</p>
-      <ion-button class="browse-button" routerLink="/browse">Filme durchsuchen</ion-button>
+      <ion-button class="browse-button" [routerLink]="['/home']">Filme durchsuchen</ion-button>
     </div>
   </div>
 
@@ -111,7 +111,8 @@
   <!-- Clear Watchlist FAB -->
   <ion-fab vertical="bottom" horizontal="end">
     <ion-fab-button class="clear-fab" (click)="clearWatchlist()">
-      <ion-icon [icon]="'trashOutline'"></ion-icon>
+      <ion-icon name="trash-outline"></ion-icon>
+
     </ion-fab-button>
   </ion-fab>
 

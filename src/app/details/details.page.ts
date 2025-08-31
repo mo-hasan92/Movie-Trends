@@ -4,13 +4,11 @@ import { CommonModule, DatePipe, DecimalPipe, UpperCasePipe } from '@angular/com
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { WatchlistService } from '../services/watchlist.service';
-
-// KORREKTE Angular Fire Imports
 import { Auth, authState } from '@angular/fire/auth';
 import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
 
 import {
-  IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonIcon, IonButton, IonSkeletonText
+  IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, IonIcon, IonButton, IonSkeletonText
 } from '@ionic/angular/standalone';
 import {
   MovieResult, CastMember, CrewMember, MovieVideo, CreditsResponse, VideoResponse,
@@ -118,7 +116,7 @@ export class DetailsPage {
     this.testFirebaseConnection();
   }
 
-  // KORRIGIERTE Firebase Test Methode
+  // Firebase Test Methode
   async testFirebaseConnection(): Promise<void> {
     try {
       console.log('Testing Firebase connection...');
@@ -197,7 +195,7 @@ export class DetailsPage {
   }
 
   /**
-   * Watchlist-Status prüfen - KORRIGIERT
+   * Watchlist-Status prüfen
    */
   async checkWatchlist(movieId: string): Promise<void> {
     try {
@@ -220,7 +218,7 @@ export class DetailsPage {
   }
 
   /**
-   * Film zur Watchlist hinzufügen/entfernen - KORRIGIERT
+   * Film zur Watchlist hinzufügen/entfernen
    */
   async toggleWatchlist(): Promise<void> {
     const movie = this.movie();
@@ -406,7 +404,7 @@ export class DetailsPage {
   }
 
   /**
-   * Format Budget mit besserer Lokalisierung - KORRIGIERT
+   * Format Budget mit besserer Lokalisierung
    */
   formatBudget(budget: number): string {
     if (!budget || budget === 0) return 'Nicht bekannt';
@@ -433,7 +431,7 @@ export class DetailsPage {
   }
 
   /**
-   * Format Revenue - KORRIGIERT
+   * Format Revenue
    */
   formatRevenue(revenue: number): string {
     if (!revenue || revenue === 0) return 'Nicht bekannt';
@@ -515,31 +513,47 @@ export class DetailsPage {
     return `data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjQ1MCIgdmlld0JveD0iMCAwIDMwMCA0NTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iNDUwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xNTAgMjI1QzE2Ni41NjkgMjI1IDE4MCAyMTEuNTY5IDE4MCAxOTVDMTgwIDE3OC40MzEgMTY2LjU2OSAxNjUgMTUwIDE2NUMxMzMuNDMxIDE2NSAxMjAgMTc4LjQzMSAxMjAgMTk1QzEyMCAyMTEuNTY5IDEzMy40MzEgMjI1IDE1MCAyMjVaIiBmaWxsPSIjRDFEM0Q3Ci8+CjxwYXRoIGQ9Ik05MCAyODVDOTAgMjc2LjE2NCA5Ny4xNjQgMjY5IDEwNiAyNjlIMTk0QzIwMi44MzYgMjY5IDIxMCAyNzYuMTY0IDIxMCAyODVWMzE1SDkwVjI4NVoiIGZpbGw9IiNEMUQzRDciLz4KPC9zdmc+`;
   }
 
-  /**
-   * Share Movie mit Web Share API
-   */
-  async shareMovie(): Promise<void> {
-    const movie = this.movie();
-    if (!movie || !isCompleteMovieResult(movie)) return;
+/**
+ * Share Movie mit Web Share API + Clipboard Fallback
+ */
+async shareMovie(): Promise<void> {
+  const movie = this.movie();
+  if (!movie) return;
 
-    const shareData = {
-      title: `${movie.title} (${new Date(movie.release_date).getFullYear()})`,
-      text: `Schau dir "${movie.title}" an! Bewertung: ${movie.vote_average}/10`,
-      url: window.location.href
-    };
+  const shareData = {
+    title: `${movie.title} (${new Date(movie.release_date).getFullYear()})`,
+    text: `Schau dir "${movie.title}" an! Bewertung: ${movie.vote_average}/10`,
+    url: window.location.href
+  };
 
-    try {
-      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
-        await navigator.share(shareData);
-      } else {
-        const textToShare = `${shareData.title}\n${shareData.text}\n${shareData.url}`;
-        await navigator.clipboard.writeText(textToShare);
-        console.log('Film-Details in die Zwischenablage kopiert!');
-      }
-    } catch (error) {
-      console.error('Fehler beim Teilen:', error);
+  try {
+    // Native Web Share API (hauptsächlich Mobile)
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      await navigator.share(shareData);
+      console.log('Film erfolgreich geteilt!');
+    } else {
+      // Fallback: Clipboard
+      const textToShare = `${shareData.title}\n${shareData.text}\n${shareData.url}`;
+      await navigator.clipboard.writeText(textToShare);
+      console.log('Film-Details in die Zwischenablage kopiert!');
     }
+  } catch (error: any) {
+    // User aborted sharing
+    if (error.name === 'AbortError') {
+      console.log('User cancelled sharing');
+      return;
+    }
+
+    console.error('Fehler beim Teilen:', error);
   }
+}
+
+/**
+ * Prüfen ob Web Share API verfügbar ist
+ */
+isWebShareSupported(): boolean {
+  return typeof navigator !== 'undefined' && 'share' in navigator;
+}
 
   /**
    * Image Error Handler mit verbessertem Fallback

@@ -23,16 +23,16 @@ import { environment } from './environments/environment.prod';
 import { enableProdMode } from '@angular/core';
 
 addIcons({
-  'menu-outline': menuOutline,
-  'arrow-up-outline': arrowUpOutline,
-    'person-outline': personOutline,
-  'mail-outline': mailOutline,
-  'key-outline': keyOutline,
-  'close-outline': closeOutline,
-  'bookmark-outline': bookmarkOutline,
-  'log-out-outline': logOutOutline,
-  'trash-outline': trashOutline,
-  'shield-checkmark-outline': shieldCheckmarkOutline
+  menuOutline,
+  arrowUpOutline,
+  personOutline,
+  mailOutline,
+  keyOutline,
+  closeOutline,
+  bookmarkOutline,
+  logOutOutline,
+  trashOutline,
+  shieldCheckmarkOutline
 });
 
 if(environment.production) {

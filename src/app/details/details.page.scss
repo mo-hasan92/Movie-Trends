@@ -1,6 +1,3 @@
-
-
-
 /* Header */
 ion-header {
   box-shadow: none;
@@ -54,7 +51,6 @@ ion-header {
       top: 2.5rem;
       right: 2.5rem;
       background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(10px);
       padding: 0.75rem 1rem;
       border-radius: 16px;
       display: flex;
@@ -154,7 +150,7 @@ ion-header {
         }
       }
 
-      .trailer-button {
+      .trailer-button, .share-button {
         --border-color: var(--primary-color);
         --color: var(--primary-color);
         --border-radius: 16px;
@@ -178,26 +174,18 @@ ion-header {
 .content-card {
   background: var(--card-color);
   margin: 1.5rem;
-  border-radius: 20px;
+  border-radius: 16px;
   box-shadow: var(--shadow-light);
   border: 1px solid var(--border-color);
-  overflow: hidden;
-  animation: slideUp 0.6s ease-out;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-medium);
-  }
 
   .card-header {
     background: rgba(107, 107, 208, 0.05);
-    padding: 1.5rem 2rem;
+    padding: 1.25rem 1.5rem;
     border-bottom: 1px solid var(--border-color);
 
     .card-title {
       color: var(--text-primary);
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       font-weight: 700;
       margin: 0;
       display: flex;
@@ -206,13 +194,13 @@ ion-header {
 
       .card-icon {
         color: var(--primary-color);
-        font-size: 1.4rem;
+        font-size: 1.3rem;
       }
     }
   }
 
   .card-content {
-    padding: 2rem;
+    padding: 1.5rem;
   }
 }
 
@@ -228,49 +216,37 @@ ion-header {
 /* Details Grid */
 .details-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 
   .detail-item {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 1.25rem;
+    gap: 0.75rem;
+    padding: 1rem;
     background: rgba(107, 107, 208, 0.05);
-    border-radius: 16px;
-    border: 1px solid var(--border-color);
-    transition: all 0.3s ease;
-
-    &:hover {
-      background: rgba(107, 107, 208, 0.1);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(107, 107, 208, 0.15);
-    }
+    border-radius: 12px;
 
     .detail-icon {
       color: var(--primary-color);
-      font-size: 1.5rem;
-      min-width: 24px;
+      font-size: 1.3rem;
+      min-width: 20px;
     }
 
     .detail-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-
       .detail-label {
         color: var(--text-secondary);
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         font-weight: 500;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        display: block;
+        margin-bottom: 0.25rem;
       }
 
       .detail-value {
         color: var(--text-primary);
-        font-size: 1rem;
+        font-size: 0.95rem;
         font-weight: 600;
       }
     }
@@ -292,36 +268,30 @@ ion-header {
 
 /* Companies Grid */
 .companies-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 
   .company-item {
     background: rgba(107, 107, 208, 0.05);
-    padding: 1.25rem;
-    border-radius: 16px;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
     border: 1px solid var(--border-color);
-    transition: all 0.3s ease;
-
-    &:hover {
-      background: rgba(107, 107, 208, 0.1);
-      transform: translateY(-2px);
-    }
 
     .company-name {
       color: var(--text-primary);
-      font-size: 1rem;
-      font-weight: 700;
-      margin: 0 0 0.5rem 0;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin: 0 0 0.25rem 0;
     }
 
     .company-country {
       color: var(--text-secondary);
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       font-weight: 500;
-      padding: 0.25rem 0.75rem;
+      padding: 0.2rem 0.5rem;
       background: rgba(107, 107, 208, 0.1);
-      border-radius: 12px;
+      border-radius: 8px;
       display: inline-block;
     }
   }
@@ -383,64 +353,6 @@ ion-header {
 
     .detail-item {
       padding: 1rem;
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .hero-section {
-    margin: 0.75rem;
-    border-radius: 20px;
-
-    .poster-container {
-      padding: 1rem 1rem 0.75rem 1rem;
-
-      .poster-image {
-        width: 150px;
-        height: 225px;
-      }
-
-      .rating-badge {
-        top: 1.5rem;
-        right: 1.5rem;
-        padding: 0.5rem 0.7rem;
-        font-size: 0.8rem;
-      }
-    }
-
-    .movie-info {
-      padding: 0.75rem 1rem 1rem 1rem;
-
-      .movie-title {
-        font-size: 1.4rem;
-      }
-
-      .movie-tagline {
-        font-size: 0.9rem;
-      }
-
-      .action-buttons {
-        flex-direction: column;
-        gap: 0.75rem;
-
-        .watchlist-button,
-        .trailer-button {
-          width: 100%;
-        }
-      }
-    }
-  }
-
-  .content-card {
-    margin: 0.75rem;
-    border-radius: 16px;
-
-    .card-header {
-      padding: 1rem 1.25rem;
-    }
-
-    .card-content {
-      padding: 1.25rem;
     }
   }
 }

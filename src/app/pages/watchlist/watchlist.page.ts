@@ -1,7 +1,7 @@
 import { Component, signal, WritableSignal, computed, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router , RouterLink } from '@angular/router';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon,
   IonSkeletonText, IonFab, IonFabButton, IonButtons, IonSearchbar, AlertController
@@ -10,11 +10,9 @@ import { WatchlistService, WatchlistItem } from '../../services/watchlist.servic
 import { Auth, onAuthStateChanged, User } from '@angular/fire/auth';
 import { addIcons } from 'ionicons';
 import {
-  playOutline, starOutline, calendarOutline, trashOutline,
+  playOutline, starOutline, calendarOutline,
   refreshOutline, alertCircleOutline, bookmarkOutline,
-  shareOutline, filterOutline, statsChartOutline, filmOutline, searchOutline, home, person, settings,
-  bookmark, star
-} from 'ionicons/icons';
+  shareOutline, filterOutline, statsChartOutline, filmOutline, searchOutline, star, trashOutline } from 'ionicons/icons';
 import { BottomNavComponent } from '../../components/bottom-nav/bottom-nav.component';
 
 @Component({
@@ -27,7 +25,7 @@ import { BottomNavComponent } from '../../components/bottom-nav/bottom-nav.compo
     IonContent, IonHeader, IonTitle, IonToolbar, IonButton,
     BottomNavComponent,
     IonIcon, IonSkeletonText, IonFab, IonFabButton,
-    IonButtons, IonSearchbar
+    IonButtons, IonSearchbar , RouterLink
   ]
 })
 export class WatchlistPage implements OnDestroy {
@@ -89,7 +87,7 @@ export class WatchlistPage implements OnDestroy {
     private router: Router,
     private alertController: AlertController
   ) {
-    addIcons({ refreshOutline, alertCircleOutline, bookmarkOutline, starOutline, star, trashOutline, playOutline, filmOutline, searchOutline, home, bookmark, person, settings, calendarOutline, shareOutline, filterOutline, statsChartOutline });
+    addIcons({trashOutline,refreshOutline,alertCircleOutline,bookmarkOutline,starOutline,star,playOutline,filmOutline,searchOutline,calendarOutline,shareOutline,filterOutline,statsChartOutline});
 
     this.initAuth();
   }

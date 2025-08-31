@@ -9,9 +9,8 @@ describe('BottomNavComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ BottomNavComponent ],
-      imports: [IonicModule.forRoot()]
-    }).compileComponents();
+    imports: [IonicModule.forRoot(), BottomNavComponent]
+}).compileComponents();
 
     fixture = TestBed.createComponent(BottomNavComponent);
     component = fixture.componentInstance;

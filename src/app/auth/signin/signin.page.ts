@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonLabel, IonItem, IonButton, IonInput} from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
@@ -13,7 +13,7 @@ import { auth } from 'src/app/firebase.config';
   styleUrls: ['./signin.page.scss'], // Der Pfad zu den CSS-Stilen der Komponente
   standalone: true, // Gibt an, dass dies eine eigenständige Komponente ist (ab Angular 14)
   // Importiert notwendige Ionic-Module und Angular-Module für die Komponente
-  imports: [IonButton, IonContent, CommonModule, FormsModule]
+  imports: [IonButton, IonContent, FormsModule]
 })
 
 // Exportiert die SigninPage-Klasse, die die Logik für die Anmeldeseite enthält

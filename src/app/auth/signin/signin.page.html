@@ -6,41 +6,43 @@
 
     <div class="welcome-text">
       <br>
-      <p>Melden Sie sich in Ihrem Konto an</p>
-    </div>
-
-    <form class="auth-form">
-      <div class="input-group">
-        <input
-          type="email"
-          placeholder="E-Mail eingeben"
-          [(ngModel)]="email"
-          class="modern-input"
-          name="email">
+        <p>Melden Sie sich in Ihrem Konto an</p>
       </div>
 
-      <div class="input-group">
-        <input
-          type="password"
-          placeholder="Passwort eingeben"
-          [(ngModel)]="password"
-          class="modern-input"
-          name="password">
-      </div>
+      <form class="auth-form">
+        <div class="input-group">
+          <input
+            type="email"
+            placeholder="E-Mail eingeben"
+            [(ngModel)]="email"
+            class="modern-input"
+            name="email">
+          </div>
 
-      <ion-button expand="full" class="signin-button" (click)="signin()">
-        <span>Anmelden</span>
-      </ion-button>
+          <div class="input-group">
+            <input
+              type="password"
+              placeholder="Passwort eingeben"
+              [(ngModel)]="password"
+              class="modern-input"
+              name="password">
+            </div>
 
-      <div *ngIf="error" class="error-message">
-        <span>{{ error }}</span>
-      </div>
-    </form>
+            <ion-button expand="full" class="signin-button" (click)="signin()">
+              <span>Anmelden</span>
+            </ion-button>
 
-    <div class="auth-link">
-      <p>Noch kein Konto?
-        <a href="/auth/signup">Jetzt registrieren</a>
-      </p>
-    </div>
-  </div>
-</ion-content>
+            @if (error) {
+              <div class="error-message">
+                <span>{{ error }}</span>
+              </div>
+            }
+          </form>
+
+          <div class="auth-link">
+            <p>Noch kein Konto?
+              <a href="/auth/signup">Jetzt registrieren</a>
+            </p>
+          </div>
+        </div>
+      </ion-content>

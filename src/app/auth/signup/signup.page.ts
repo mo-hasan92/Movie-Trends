@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 // Ionic UI-Komponenten
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonButton } from '@ionic/angular/standalone';
@@ -16,7 +16,7 @@ import { auth } from 'src/app/firebase.config';
   templateUrl: './signup.page.html', // HTML-Template
   styleUrls: ['./signup.page.scss'], // Styles für diese Seite
   standalone: true, // ermöglicht Standalone-Komponenten (ohne Module)
-  imports: [IonButton, IonContent,  CommonModule, FormsModule]
+  imports: [IonButton, IonContent, FormsModule]
 })
 export class SignupPage implements OnInit {
 

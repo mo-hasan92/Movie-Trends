@@ -12,13 +12,15 @@ import { menuOutline, arrowUpOutline,
   closeOutline ,
   logOutOutline,
   trashOutline,
-  shieldCheckmarkOutline , filmOutline ,
+  shieldCheckmarkOutline ,
     cashOutline, calendarOutline, starOutline, peopleOutline,
    languageOutline, linkOutline, playOutline,
-  shareOutline, bookmarkOutline, timeOutline,
-  businessOutline, globeOutline, alertCircleOutline, refreshOutline, checkmarkCircleOutline, documentTextOutline, informationCircleOutline,
+  shareOutline, bookmarkOutline,
+  businessOutline, checkmarkCircleOutline, documentTextOutline, informationCircleOutline,
   openOutline, trophyOutline, personOutline, videocamOutline,
-  star
+  star, person,
+  searchOutline, locationOutline, callOutline, globeOutline, timeOutline,
+  filmOutline, mapOutline, alertCircleOutline, refreshOutline,  accessibilityOutline, navigateOutline ,
  } from 'ionicons/icons';
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
@@ -28,19 +30,14 @@ import { enableProdMode } from '@angular/core';
 
 
 addIcons({
-  menuOutline,
-  arrowUpOutline,
-  personOutline,
-  mailOutline,
-  keyOutline,
+  menuOutline, arrowUpOutline, personOutline, mailOutline, keyOutline,
   closeOutline,
   bookmarkOutline,
   logOutOutline,
-  trashOutline,
-  shieldCheckmarkOutline ,
+  trashOutline ,person , shieldCheckmarkOutline,alertCircleOutline , mapOutline ,
   star ,calendarOutline, shareOutline , filmOutline,
-  cashOutline ,  starOutline, languageOutline, linkOutline, playOutline, timeOutline, businessOutline, globeOutline, alertCircleOutline, refreshOutline, checkmarkCircleOutline, documentTextOutline, informationCircleOutline,
-  openOutline, trophyOutline, videocamOutline , peopleOutline
+  cashOutline ,  starOutline, languageOutline, linkOutline, playOutline, timeOutline, businessOutline, globeOutline, refreshOutline, checkmarkCircleOutline, documentTextOutline, informationCircleOutline,
+  openOutline, trophyOutline, videocamOutline , peopleOutline , accessibilityOutline, navigateOutline , searchOutline , locationOutline, callOutline,
 });
 
 if(environment.production) {

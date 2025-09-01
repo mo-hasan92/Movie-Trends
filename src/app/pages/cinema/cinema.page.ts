@@ -10,10 +10,6 @@ import { Cinema, CinemaSearchResponse, CinemaSearchError } from '../../services/
 import { PLZ_REGEX } from '../../config/api-key';
 import { BottomNavComponent } from '../../components/bottom-nav/bottom-nav.component';
 import { addIcons } from 'ionicons';
-import {
-  searchOutline, locationOutline, callOutline, globeOutline, timeOutline,
-  filmOutline, mapOutline, alertCircleOutline, refreshOutline,  accessibilityOutline, navigateOutline } from 'ionicons/icons';
-
 @Component({
     selector: 'app-cinema',
     templateUrl: './cinema.page.html',
@@ -56,9 +52,6 @@ export class CinemaPage {
   ];
 
   constructor() {
-    // Icons registrieren
-    addIcons({searchOutline,locationOutline,alertCircleOutline,refreshOutline,
-      timeOutline,filmOutline,accessibilityOutline,callOutline,globeOutline,mapOutline,navigateOutline});
     this.checkLocationPermission();
   }
 
@@ -102,7 +95,7 @@ export class CinemaPage {
         20000 // 20km Radius
       ).subscribe({
         next: (result) => {
-          console.log('Kinos in der Nähe:', result);
+          //console.log('Kinos in der Nähe:', result);
           this.searchResults.set(result);
           this.isSearching.set(false);
           this.isLocating.set(false);
@@ -169,7 +162,7 @@ export class CinemaPage {
       ? { zipCode: term }
       : { city: term };
 
-    console.log('Suche Kinos für:', searchParams);
+    //console.log('Suche Kinos für:', searchParams);
 
     this.cinemaService.searchCinemas(searchParams).subscribe({
       next: (result) => {

@@ -81,8 +81,6 @@ export class WatchlistPage implements OnDestroy {
     private router: Router,
     private alertController: AlertController
   ) {
-
-
     this.initAuth();
   }
 

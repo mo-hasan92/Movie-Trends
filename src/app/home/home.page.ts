@@ -27,7 +27,6 @@ import { BottomNavComponent } from '../components/bottom-nav/bottom-nav.componen
 import { auth } from '../firebase.config';
 import { User } from 'firebase/auth';
 import { addIcons } from 'ionicons';
-import { star, calendarOutline, shareOutline ,arrowUpOutline } from 'ionicons/icons';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -65,7 +64,7 @@ export class HomePage {
   public currentUser: User | null = null;
 
   constructor() {
-    addIcons({  star,calendarOutline, shareOutline, arrowUpOutline});
+
     this.loadMovies();
     this.setupSearch();
     //this.checkAuthState();

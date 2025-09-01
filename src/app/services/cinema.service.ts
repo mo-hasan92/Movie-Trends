@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError, of, forkJoin } from 'rxjs';
 import { map, catchError, timeout, switchMap } from 'rxjs/operators';
-
+import { Geolocation } from '@capacitor/geolocation';
 import {
   Cinema,
   CinemaSearchParams,
@@ -30,6 +30,76 @@ export class CinemaService {
   private readonly CACHE_DURATION = 10 * 60 * 1000; // 10 Minuten
 
   constructor() {}
+
+   /**
+   * Kinos basierend auf dem aktuellen Standort suchen
+   */
+  searchCinemasByCoordinates(latitude: number, longitude: number, radius?: number): Observable<CinemaSearchResponse> {
+    const startTime = Date.now();
+
+    const searchParams: CinemaSearchParams = {
+      latitude,
+      longitude,
+      radius: radius || CINEMA_SEARCH_DEFAULTS.RADIUS
+    };
+
+    // Cache prüfen
+    const cacheKey = this.getCacheKey(searchParams);
+    const cachedResult = this.searchCache.get(cacheKey);
+    if (cachedResult) {
+      console.log('Cache hit für Koordinaten-Suche:', cacheKey);
+      return of(cachedResult);
+    }
+
+    // Direkte Suche mit Koordinaten
+    return this.searchCinemasAroundCoordinates(
+      { lat: latitude, lng: longitude, location: 'Mein Standort' },
+      searchParams
+    ).pipe(
+      map(response => ({
+        ...response,
+        queryTime: Date.now() - startTime
+      })),
+      catchError(error => this.handleError(error)),
+      // Cache speichern
+      map(result => {
+        this.searchCache.set(cacheKey, result);
+        setTimeout(() => {
+          this.searchCache.delete(cacheKey);
+        }, this.CACHE_DURATION);
+        return result;
+      })
+    );
+  }
+
+  /**
+   * Aktuellen Standort des Benutzers abrufen
+   */
+  async getCurrentLocation(): Promise<{latitude: number, longitude: number}> {
+    try {
+      const status = await Geolocation.checkPermissions();
+
+      if (status.location !== 'granted') {
+        const requestStatus = await Geolocation.requestPermissions();
+        if (requestStatus.location !== 'granted') {
+          throw new Error('Standortberechtigung verweigert');
+        }
+      }
+
+      const position = await Geolocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 10000
+      });
+
+      return {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude
+      };
+    } catch (error) {
+      console.error('Fehler beim Standortabruf:', error);
+      throw error;
+    }
+  }
 
   /**
    * Hauptmethode: Suche Kinos nach Postleitzahl oder Stadt

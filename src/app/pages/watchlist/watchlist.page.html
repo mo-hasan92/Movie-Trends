@@ -17,7 +17,7 @@
   @if (error()) {
     <div class="error-container">
       <div class="error-content">
-        <ion-icon class="error-icon" [icon]="'alertCircleOutline'"></ion-icon>
+        <ion-icon class="error-icon" [icon]="'alert-circle-outline'"></ion-icon>
         <h2>Fehler</h2>
         <p>{{ error() }}</p>
         <ion-button class="retry-button" (click)="refresh()">Erneut versuchen</ion-button>
@@ -29,7 +29,7 @@
   @if (!error() && !isLoading() && watchlist().length === 0) {
     <div class="empty-container">
       <div class="empty-content">
-        <ion-icon class="empty-icon" [icon]="'filmOutline'"></ion-icon>
+        <ion-icon class="empty-icon" [icon]="'film-outline'"></ion-icon>
         <h2>Keine Filme in der Watchlist</h2>
         <p>Füge Filme hinzu, um sie hier zu sehen.</p>
         <ion-button class="browse-button" [routerLink]="['/home']">Filme durchsuchen</ion-button>
@@ -61,7 +61,7 @@
       <div class="stats-card">
         <div class="stats-content">
           <div class="stat-item">
-            <ion-icon class="stat-icon" [icon]="'filmOutline'"></ion-icon>
+            <ion-icon class="stat-icon" [icon]="'film-outline'"></ion-icon>
             <div class="stat-details">
               <span class="stat-value">{{ movieCount() }}</span>
               <span class="stat-label">Filme</span>

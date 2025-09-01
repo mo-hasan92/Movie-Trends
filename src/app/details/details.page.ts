@@ -14,15 +14,6 @@ import {
   TMDB_IMAGE_SIZES, RATING_THRESHOLDS, isTrailer, getMainCast, getDirector,
   isCompleteMovieResult, MovieListItem
 } from '../services/interfaces';
-import {
-  cashOutline, calendarOutline, starOutline, peopleOutline,
-  filmOutline, languageOutline, linkOutline, playOutline,
-  shareOutline, heartOutline, bookmarkOutline, timeOutline,
-  businessOutline, globeOutline, alertCircleOutline, refreshOutline,
-  add, checkmarkCircleOutline, documentTextOutline, informationCircleOutline,
-  openOutline, trophyOutline, personOutline, videocamOutline,
-  star
-} from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { catchError, firstValueFrom, forkJoin, of } from 'rxjs';
 
@@ -101,14 +92,6 @@ export class DetailsPage {
   }
 
   constructor() {
-    // Icons für bessere Performance vorab laden
-    addIcons({
-      alertCircleOutline, refreshOutline, star, playOutline, documentTextOutline,
-      informationCircleOutline, calendarOutline, timeOutline, cashOutline, starOutline,
-      languageOutline, checkmarkCircleOutline, linkOutline, openOutline, businessOutline,
-      shareOutline, peopleOutline, filmOutline, add, heartOutline, bookmarkOutline,
-      globeOutline, trophyOutline, personOutline, videocamOutline
-    });
 
     //  FIREBASE VERBINDUNGSTEST (Nur für Debugging)
     //this.testFirebaseConnection();
@@ -210,7 +193,7 @@ export class DetailsPage {
 
       const inWatchlist = await this.watchlistService.isInWatchlist(movieId);
       this.isInWatchlist.set(inWatchlist);
-      console.log(`Film ${movieId} in Watchlist:`, inWatchlist);
+      //console.log(`Film ${movieId} in Watchlist:`, inWatchlist);
     } catch (error) {
       console.error('Fehler beim Prüfen der Watchlist:', error);
       this.isInWatchlist.set(false);

@@ -1,11 +1,10 @@
 import { Component, inject, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router } from '@angular/router';
 import {
   IonContent, IonButton, IonIcon, IonSpinner, IonSkeletonText, IonSearchbar
 } from '@ionic/angular/standalone';
-
 import { CinemaService } from '../../services/cinema.service';
 import { Cinema, CinemaSearchResponse, CinemaSearchError } from '../../services/cinema-interfaces';
 import { PLZ_REGEX } from '../../config/api-key';
@@ -13,8 +12,7 @@ import { BottomNavComponent } from '../../components/bottom-nav/bottom-nav.compo
 import { addIcons } from 'ionicons';
 import {
   searchOutline, locationOutline, callOutline, globeOutline, timeOutline,
-  filmOutline, mapOutline, alertCircleOutline, refreshOutline,
-  home, bookmark, person, business, accessibilityOutline } from 'ionicons/icons';
+  filmOutline, mapOutline, alertCircleOutline, refreshOutline,  accessibilityOutline, navigateOutline } from 'ionicons/icons';
 
 @Component({
     selector: 'app-cinema',
@@ -26,6 +24,7 @@ import {
         IonSpinner, IonSkeletonText, IonSearchbar
     ]
 })
+
 export class CinemaPage {
 
   // Services
@@ -42,6 +41,11 @@ export class CinemaPage {
   // UI State
   public showSuggestions: WritableSignal<boolean> = signal(false);
 
+   // Neue Properties für Geolocation
+  public isLocating: WritableSignal<boolean> = signal(false);
+  public locationPermission: WritableSignal<'granted' | 'denied' | 'prompt'> = signal('prompt');
+
+
   // Beispiel-Suchvorschläge
   public suggestions = [
     { type: 'plz', value: '60311', label: 'Frankfurt am Main' },
@@ -53,7 +57,90 @@ export class CinemaPage {
 
   constructor() {
     // Icons registrieren
-    addIcons({business,searchOutline,locationOutline,alertCircleOutline,refreshOutline,timeOutline,filmOutline,accessibilityOutline,callOutline,globeOutline,mapOutline,home,bookmark,person});
+    addIcons({searchOutline,locationOutline,alertCircleOutline,refreshOutline,
+      timeOutline,filmOutline,accessibilityOutline,callOutline,globeOutline,mapOutline,navigateOutline});
+    this.checkLocationPermission();
+  }
+
+
+  /**
+   * Standortberechtigung prüfen
+   */
+  async checkLocationPermission(): Promise<void> {
+    try {
+      // Für Capacitor/Web-API
+      if (typeof (navigator as any).permissions !== 'undefined') {
+        const status = await (navigator as any).permissions.query({ name: 'geolocation' });
+        this.locationPermission.set(status.state === 'granted' ? 'granted' :
+                                  status.state === 'denied' ? 'denied' : 'prompt');
+      }
+    } catch (error) {
+      console.error('Fehler bei Berechtigungsprüfung:', error);
+    }
+  }
+
+  /**
+   * Kinos in der Nähe finden
+   */
+  async findCinemasNearby(): Promise<void> {
+    this.isLocating.set(true);
+    this.error.set(null);
+
+    try {
+      // Aktuelle Position abrufen
+      const location = await this.cinemaService.getCurrentLocation();
+
+      // Nach Kinos in der Nähe suchen
+      this.isSearching.set(true);
+      this.searchTerm.set('Mein Standort');
+      this.hasSearched.set(true);
+      this.showSuggestions.set(false);
+
+      this.cinemaService.searchCinemasByCoordinates(
+        location.latitude,
+        location.longitude,
+        20000 // 20km Radius
+      ).subscribe({
+        next: (result) => {
+          console.log('Kinos in der Nähe:', result);
+          this.searchResults.set(result);
+          this.isSearching.set(false);
+          this.isLocating.set(false);
+          this.locationPermission.set('granted');
+
+          if (result.cinemas.length === 0) {
+            this.error.set({
+              code: 'NO_RESULTS',
+              message: 'Keine Kinos in Ihrer Nähe gefunden.'
+            });
+          }
+        },
+        error: (err) => {
+          console.error('Fehler bei der Standortsuche:', err);
+          this.error.set(err);
+          this.isSearching.set(false);
+          this.isLocating.set(false);
+
+          if (err.message?.includes('Standortberechtigung')) {
+            this.locationPermission.set('denied');
+          }
+        }
+      });
+
+    } catch (error) {
+      console.error('Fehler beim Standortabruf:', error);
+      this.isLocating.set(false);
+      this.error.set({
+        code: 'LOCATION_ERROR',
+        message: typeof error === 'object' && error !== null && 'message' in error
+          ? (error as { message?: string }).message || 'Standort konnte nicht ermittelt werden.'
+          : 'Standort konnte nicht ermittelt werden.'
+      });
+
+      if (typeof error === 'object' && error !== null && 'message' in error && typeof (error as any).message === 'string' && (error as any).message.includes('verweigert')) {
+        this.locationPermission.set('denied');
+      }
+    }
   }
 
   /**

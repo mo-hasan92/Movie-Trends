@@ -6,21 +6,26 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { firebaseConfig } from '../src/app/firebase.config';
-import { menuOutline, arrowUpOutline
-  , personOutline,
+import { menuOutline, arrowUpOutline,
   mailOutline,
   keyOutline,
   closeOutline ,
-  bookmarkOutline ,
   logOutOutline,
   trashOutline,
-  shieldCheckmarkOutline
+  shieldCheckmarkOutline , filmOutline ,
+    cashOutline, calendarOutline, starOutline, peopleOutline,
+   languageOutline, linkOutline, playOutline,
+  shareOutline, bookmarkOutline, timeOutline,
+  businessOutline, globeOutline, alertCircleOutline, refreshOutline, checkmarkCircleOutline, documentTextOutline, informationCircleOutline,
+  openOutline, trophyOutline, personOutline, videocamOutline,
+  star
  } from 'ionicons/icons';
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { provideHttpClient } from '@angular/common/http';
 import { environment } from './environments/environment.prod';
 import { enableProdMode } from '@angular/core';
+
 
 addIcons({
   menuOutline,
@@ -32,7 +37,10 @@ addIcons({
   bookmarkOutline,
   logOutOutline,
   trashOutline,
-  shieldCheckmarkOutline
+  shieldCheckmarkOutline ,
+  star ,calendarOutline, shareOutline , filmOutline,
+  cashOutline ,  starOutline, languageOutline, linkOutline, playOutline, timeOutline, businessOutline, globeOutline, alertCircleOutline, refreshOutline, checkmarkCircleOutline, documentTextOutline, informationCircleOutline,
+  openOutline, trophyOutline, videocamOutline , peopleOutline
 });
 
 if(environment.production) {

@@ -5,7 +5,7 @@ export const routes: Routes = [
   // Startseite
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'auth/signin',
     pathMatch: 'full',
   },
 

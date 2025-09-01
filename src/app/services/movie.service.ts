@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { ApiResult, MovieResult } from './interfaces';
 import { delay, Observable } from 'rxjs';
 
-// **🎬 TMDB API Configuration**
+// ** TMDB API Configuration**
 const BASE_URL = 'https://api.themoviedb.org/3';
 const API_KEY = '64c522d83459d756bde1818638620516';
 
@@ -16,7 +16,7 @@ export class MovieService {
   constructor() { }
 
   /**
-   * **🔥 Get Popular Movies (Original Method)**
+   * ** Get Popular Movies (Original Method)**
    * Lädt beliebte Filme von TMDB
    * @param page - Seitennummer (Standard: 1)
    * @returns Observable mit ApiResult
@@ -27,7 +27,7 @@ export class MovieService {
   }
 
   /**
-   * **🎯 Get Movie Details (Original Method)**
+   * ** Get Movie Details (Original Method)**
    * Lädt Details für einen spezifischen Film
    * @param id - Film ID
    * @returns Observable mit MovieResult
@@ -37,7 +37,7 @@ export class MovieService {
   }
 
   /**
-   * **🔍 Search Movies (Neue Method für Search-Funktionalität)**
+   * ** Search Movies (Neue Method für Search-Funktionalität)**
    * Sucht nach Filmen basierend auf einem Query
    * @param query - Suchbegriff
    * @param page - Seitennummer (Standard: 1)
@@ -57,7 +57,7 @@ export class MovieService {
   }
 
   /**
-   * **⭐ Get Top Rated Movies (Zusätzliche Method)**
+   * ** Get Top Rated Movies (Zusätzliche Method)**
    * Lädt die am besten bewerteten Filme
    * @param page - Seitennummer (Standard: 1)
    * @returns Observable mit ApiResult
@@ -67,7 +67,7 @@ export class MovieService {
   }
 
   /**
-   * **🎭 Get Movies by Genre (Zusätzliche Method)**
+   * ** Get Movies by Genre (Zusätzliche Method)**
    * Lädt Filme nach Genre
    * @param genreId - Genre ID
    * @param page - Seitennummer (Standard: 1)
@@ -80,7 +80,7 @@ export class MovieService {
   }
 
   /**
-   * **🎬 Get Now Playing Movies (Zusätzliche Method)**
+   * ** Get Now Playing Movies (Zusätzliche Method)**
    * Lädt aktuell laufende Filme
    * @param page - Seitennummer (Standard: 1)
    * @returns Observable mit ApiResult
@@ -90,7 +90,7 @@ export class MovieService {
   }
 
   /**
-   * **🔮 Get Upcoming Movies (Zusätzliche Method)**
+   * ** Get Upcoming Movies (Zusätzliche Method)**
    * Lädt kommende Filme
    * @param page - Seitennummer (Standard: 1)
    * @returns Observable mit ApiResult
@@ -100,7 +100,7 @@ export class MovieService {
   }
 
   /**
-   * **🎯 Get Similar Movies (Zusätzliche Method)**
+   * ** Get Similar Movies (Zusätzliche Method)**
    * Lädt ähnliche Filme zu einem bestimmten Film
    * @param movieId - Film ID
    * @param page - Seitennummer (Standard: 1)
@@ -113,7 +113,7 @@ export class MovieService {
   }
 
   /**
-   * **🏷️ Get Movie Genres (Zusätzliche Method)**
+   * ** Get Movie Genres (Zusätzliche Method)**
    * Lädt alle verfügbaren Genres
    * @returns Observable mit Genre-Liste
    */
@@ -124,7 +124,7 @@ export class MovieService {
   }
 
   /**
-   * **🎥 Get Movie Videos (Zusätzliche Method)**
+   * ** Get Movie Videos (Zusätzliche Method)**
    * Lädt Videos (Trailer, etc.) für einen Film
    * @param movieId - Film ID
    * @returns Observable mit Video-Daten
@@ -136,7 +136,7 @@ export class MovieService {
   }
 
   /**
-   * **👥 Get Movie Credits (Zusätzliche Method)**
+   * ** Get Movie Credits (Zusätzliche Method)**
    * Lädt Cast und Crew für einen Film
    * @param movieId - Film ID
    * @returns Observable mit Credits-Daten

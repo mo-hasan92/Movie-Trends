@@ -1,4 +1,4 @@
-// **🎬 MAIN API INTERFACES**
+// ** MAIN API INTERFACES**
 
 export interface ApiResult {
   page: number;

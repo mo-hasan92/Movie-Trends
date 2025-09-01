@@ -67,16 +67,16 @@ export class HomePage {
 
     this.loadMovies();
     this.setupSearch();
-    //this.checkAuthState();
+    this.checkAuthState();
   }
 
   // Firebase Auth State prüfen
-/*   private checkAuthState() {
+   private checkAuthState() {
     auth.onAuthStateChanged((user) => {
       this.currentUser = user;
       console.log('User:', user?.email || 'Nicht angemeldet');
     });
-  } */
+  }
 
   // Filme laden
   loadMovies(event?: InfiniteScrollCustomEvent, isRefresh = false) {

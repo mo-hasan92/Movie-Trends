@@ -1,5 +1,3 @@
-
-
 // OpenStreetMap Overpass Response Interfaces
 export interface OverpassResponse {
   version: number;

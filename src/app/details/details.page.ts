@@ -509,31 +509,50 @@ async shareMovie(): Promise<void> {
   const movie = this.movie();
   if (!movie) return;
 
-  const shareData = {
-    title: `${movie.title} (${new Date(movie.release_date).getFullYear()})`,
-    text: `Schau dir "${movie.title}" an! Bewertung: ${movie.vote_average}/10`,
-    url: window.location.href
-  };
+  // Nur über HTTPS und mit Web Share API
+  if (window.location.protocol !== 'https:' || !navigator.share) {
+    console.log('Native sharing not available');
+    return;
+  }
+
+  const shareTitle = `${movie.title} (${new Date(movie.release_date).getFullYear()})`;
+  const shareText = `Schau dir "${movie.title}" an! Bewertung: ${movie.vote_average}/10`;
+  const shareUrl = window.location.href;
+
+  console.log('Attempting native share...');
 
   try {
-    // Native Web Share API (hauptsächlich Mobile)
-    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
-      await navigator.share(shareData);
-      console.log('Film erfolgreich geteilt!');
-    } else {
-      // Fallback: Clipboard
-      const textToShare = `${shareData.title}\n${shareData.text}\n${shareData.url}`;
-      await navigator.clipboard.writeText(textToShare);
-      console.log('Film-Details in die Zwischenablage kopiert!');
-    }
+    // Versuch 1: Vollständige Daten (für WhatsApp, Telegram, etc.)
+    await navigator.share({
+      title: shareTitle,
+      text: shareText,
+      url: shareUrl
+    });
+    console.log('Native share success!');
+
   } catch (error: any) {
-    // User aborted sharing
+    // User hat abgebrochen - normal
     if (error.name === 'AbortError') {
       console.log('User cancelled sharing');
       return;
     }
 
-    console.error('Fehler beim Teilen:', error);
+    // Versuch 2: Nur Text + URL (falls title problematisch)
+    try {
+      await navigator.share({
+        text: `${shareText}\n\n${shareUrl}`
+      });
+      console.log('Simple share success!');
+
+    } catch (secondError: any) {
+      if (secondError.name === 'AbortError') {
+        console.log('User cancelled simple sharing');
+        return;
+      }
+
+      console.log('Native sharing failed:', secondError.message);
+      // Keine weitere Aktion - kein Fallback
+    }
   }
 }
 
@@ -541,7 +560,15 @@ async shareMovie(): Promise<void> {
  * Prüfen ob Web Share API verfügbar ist
  */
 isWebShareSupported(): boolean {
-  return typeof navigator !== 'undefined' && 'share' in navigator;
+  return typeof navigator !== 'undefined' &&
+         'share' in navigator &&
+         window.location.protocol === 'https:';
+}
+
+getShareButtonText(): string {
+  if (window.location.protocol !== 'https:') return 'Kopieren';
+  if (!navigator.share) return 'Kopieren';
+  return 'Teilen';
 }
 
   /**

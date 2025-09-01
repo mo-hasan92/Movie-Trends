@@ -71,7 +71,7 @@ export class HomePage {
   }
 
   // Firebase Auth State prüfen
-   private checkAuthState() {
+  private checkAuthState() {
     auth.onAuthStateChanged((user) => {
       this.currentUser = user;
       console.log('User:', user?.email || 'Nicht angemeldet');
@@ -91,34 +91,34 @@ export class HomePage {
       ? this.movieService.searchMovies(this.searchQuery, this.currentPage)
       : this.movieService.getTopRatedMovies(this.currentPage);
 
-      // API Call mit RxJS Operators
-      apiCall.pipe(
-        finalize(() => {
-          this.isLoading = false;
-          this.isSearching = false;
-          if (event) event.target.complete();
-        }),
-        catchError((err: any) => {
-          console.error('API Fehler:', err);
-          this.error = 'Fehler beim Laden der Filme. Bitte versuchen Sie es erneut.';
-          return [];
-        })
-      ).subscribe(res => {
-        // Bei Refresh oder erster Seite Array leeren
-        if (isRefresh || this.currentPage === 1) {
-          this.movies = [];
-        }
+    // API Call mit RxJS Operators
+    apiCall.pipe(
+      finalize(() => {
+        this.isLoading = false;
+        this.isSearching = false;
+        if (event) event.target.complete();
+      }),
+      catchError((err: any) => {
+        console.error('API Fehler:', err);
+        this.error = 'Fehler beim Laden der Filme. Bitte versuchen Sie es erneut.';
+        return [];
+      })
+    ).subscribe(res => {
+      // Bei Refresh oder erster Seite Array leeren
+      if (isRefresh || this.currentPage === 1) {
+        this.movies = [];
+      }
 
-        // Filme zum Array hinzufügen
-        if (res && res.results) {
-          this.movies.push(...res.results);
-        }
+      // Filme zum Array hinzufügen
+      if (res && res.results) {
+        this.movies.push(...res.results);
+      }
 
-        // Infinite Scroll deaktivieren wenn keine weiteren Seiten
-        if (event) {
-          event.target.disabled = res?.total_pages === this.currentPage;
-        }
-      });
+      // Infinite Scroll deaktivieren wenn keine weiteren Seiten
+      if (event) {
+        event.target.disabled = res?.total_pages === this.currentPage;
+      }
+    });
   }
 
   // Mehr Filme laden (Infinite Scroll)
@@ -200,21 +200,21 @@ export class HomePage {
     }
   }
 
-    ionViewDidEnter() {
-      if (this.content) {
-        this.content.getScrollElement().then(scrollElement => {
-          scrollElement.addEventListener('scroll', this.handleScroll.bind(this));
-        });
-      }
+  ionViewDidEnter() {
+    if (this.content) {
+      this.content.getScrollElement().then(scrollElement => {
+        scrollElement.addEventListener('scroll', this.handleScroll.bind(this));
+      });
     }
+  }
 
-    private handleScroll(event: any) {
-      const scrollElement = event.target;
-      const scrollTop = scrollElement.scrollTop;
+  private handleScroll(event: any) {
+    const scrollElement = event.target;
+    const scrollTop = scrollElement.scrollTop;
 
-      // Show/hide scroll to top button
-      this.showScrollButton.set(scrollTop > 400);
-    }
+    // Show/hide scroll to top button
+    this.showScrollButton.set(scrollTop > 400);
+  }
 
 
   // Utility method für bessere Fehlerbehandlung
@@ -241,4 +241,7 @@ export class HomePage {
     this.searchSubject.complete();
   }
 }
+
+
+
 

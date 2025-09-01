@@ -75,31 +75,34 @@ export class CinemaService {
   /**
    * Aktuellen Standort des Benutzers abrufen
    */
-  async getCurrentLocation(): Promise<{latitude: number, longitude: number}> {
-    try {
-      const status = await Geolocation.checkPermissions();
 
-      if (status.location !== 'granted') {
-        const requestStatus = await Geolocation.requestPermissions();
-        if (requestStatus.location !== 'granted') {
-          throw new Error('Standortberechtigung verweigert');
-        }
+async getCurrentLocation(): Promise<{latitude: number, longitude: number}> {
+  try {
+    // Berechtigungen prüfen und anfordern
+    const permissions = await Geolocation.checkPermissions();
+
+    if (permissions.location !== 'granted') {
+      const requestResult = await Geolocation.requestPermissions();
+
+      if (requestResult.location !== 'granted') {
+        throw new Error('Standortberechtigung wurde verweigert');
       }
-
-      const position = await Geolocation.getCurrentPosition({
-        enableHighAccuracy: true,
-        timeout: 10000
-      });
-
-      return {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude
-      };
-    } catch (error) {
-      console.error('Fehler beim Standortabruf:', error);
-      throw error;
     }
+
+    const coordinates = await Geolocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 10000
+    });
+
+    return {
+      latitude: coordinates.coords.latitude,
+      longitude: coordinates.coords.longitude
+    };
+  } catch (error) {
+    console.error('Fehler beim Standortabruf:', error);
+    throw error;
   }
+}
 
   /**
    * Hauptmethode: Suche Kinos nach Postleitzahl oder Stadt

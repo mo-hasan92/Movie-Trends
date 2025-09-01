@@ -5,8 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { WatchlistService } from '../services/watchlist.service';
 import { Auth, authState } from '@angular/fire/auth';
-import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
-
+import { Firestore } from '@angular/fire/firestore';
 import {
   IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, IonIcon, IonButton, IonSkeletonText
 } from '@ionic/angular/standalone';
@@ -195,7 +194,7 @@ export class DetailsPage {
   } */
 
   /**
-   * 📋 WATCHLIST-STATUS PRÜFEN
+   *  WATCHLIST-STATUS PRÜFEN
    * Überprüft ob der aktuelle Film in der Watchlist ist
    */
   async checkWatchlist(movieId: string): Promise<void> {

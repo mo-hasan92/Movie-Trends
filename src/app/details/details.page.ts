@@ -14,7 +14,6 @@ import {
   TMDB_IMAGE_SIZES, RATING_THRESHOLDS, isTrailer, getMainCast, getDirector,
   isCompleteMovieResult, MovieListItem
 } from '../services/interfaces';
-import { addIcons } from 'ionicons';
 import { catchError, firstValueFrom, forkJoin, of } from 'rxjs';
 
 @Component({

@@ -1,8 +1,7 @@
 // src/app/services/cinema.service.ts
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError, of, forkJoin } from 'rxjs';
-import { map, catchError, timeout, switchMap } from 'rxjs/operators';
+import { Observable, throwError, of, catchError ,from , map , timeout , switchMap } from 'rxjs';
 import { Geolocation } from '@capacitor/geolocation';
 import {
   Cinema,
@@ -17,6 +16,10 @@ import {
   CinemaErrorCode
 } from './cinema-interfaces';
 import { OSM_CONFIG, PLZ_REGEX } from '../config/api-key';
+import { Http } from '@capacitor-community/http';
+
+const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
+const NOMINATIM_SEARCH = 'https://nominatim.openstreetmap.org/search';
 
 @Injectable({
   providedIn: 'root'
@@ -34,40 +37,56 @@ export class CinemaService {
    /**
    * Kinos basierend auf dem aktuellen Standort suchen
    */
-  searchCinemasByCoordinates(latitude: number, longitude: number, radius?: number): Observable<CinemaSearchResponse> {
-    const startTime = Date.now();
+  searchCinemasByCoordinates(
+    latitude: number,
+    longitude: number,
+    radius: number = CINEMA_SEARCH_DEFAULTS.RADIUS ): Observable<CinemaSearchResponse> {
 
-    const searchParams: CinemaSearchParams = {
-      latitude,
-      longitude,
-      radius: radius || CINEMA_SEARCH_DEFAULTS.RADIUS
+    const query = buildOverpassQuery(latitude, longitude, radius);
+    const started = performance.now();
+
+    // Wichtig: Overpass etiquette – eigenen User-Agent setzen
+    const headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept': 'application/json',
+      'User-Agent': 'MovieTrends/1.0 (contact: youremail@example.com)'
     };
 
-    // Cache prüfen
-    const cacheKey = this.getCacheKey(searchParams);
-    const cachedResult = this.searchCache.get(cacheKey);
-    if (cachedResult) {
-      console.log('Cache hit für Koordinaten-Suche:', cacheKey);
-      return of(cachedResult);
-    }
+    return from(Http.request({
+      method: 'POST',
+      url: OVERPASS_URL,
+      headers,
+      data: `data=${encodeURIComponent(query)}`, // urlencoded!
+      connectTimeout: 30000, // ms
+      readTimeout: 30000
+    })).pipe(
+      map(res => {
+        const json = res.data as OverpassResponse;
+        const center = { lat: latitude, lng: longitude };
 
-    // Direkte Suche mit Koordinaten
-    return this.searchCinemasAroundCoordinates(
-      { lat: latitude, lng: longitude, location: 'Mein Standort' },
-      searchParams
-    ).pipe(
-      map(response => ({
-        ...response,
-        queryTime: Date.now() - startTime
-      })),
-      catchError(error => this.handleError(error)),
-      // Cache speichern
-      map(result => {
-        this.searchCache.set(cacheKey, result);
-        setTimeout(() => {
-          this.searchCache.delete(cacheKey);
-        }, this.CACHE_DURATION);
-        return result;
+        const cinemas = (json.elements || [])
+          .map(el => convertOverpassElementToCinema(el, center))
+          .filter((x): x is Cinema => !!x)
+          .sort((a, b) => a.distance - b.distance);
+
+        const elapsed = Math.round(performance.now() - started);
+
+        return {
+          cinemas,
+          total: cinemas.length,
+          searchLocation: 'Mein Standort',
+          center,
+          dataSource: 'openstreetmap' as const,
+          queryTime: elapsed
+        };
+      }),
+      catchError(err => {
+        const error: CinemaSearchError = {
+          code: 'OVERPASS_ERROR',
+          message: 'Overpass-Anfrage fehlgeschlagen.',
+          details: err
+        };
+        return throwError(() => error);
       })
     );
   }
@@ -76,75 +95,98 @@ export class CinemaService {
    * Aktuellen Standort des Benutzers abrufen
    */
 
-async getCurrentLocation(): Promise<{latitude: number, longitude: number}> {
-  try {
-    // Berechtigungen prüfen und anfordern
-    const permissions = await Geolocation.checkPermissions();
+  async getCurrentLocation(): Promise<{ latitude: number; longitude: number }> {
+    // 1) Berechtigung anfragen (Android 12+)
+    try {
+      await Geolocation.requestPermissions();
+    } catch {}
 
-    if (permissions.location !== 'granted') {
-      const requestResult = await Geolocation.requestPermissions();
-
-      if (requestResult.location !== 'granted') {
-        throw new Error('Standortberechtigung wurde verweigert');
-      }
+    // 2) Position holen (mit Timeouts & Fallback)
+    try {
+      const pos = await Geolocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 10000,       // 10s
+        maximumAge: 30000     // 30s
+      });
+      return {
+        latitude: pos.coords.latitude,
+        longitude: pos.coords.longitude
+      };
+    } catch (err) {
+      // Fallback: letzte bekannte Position
+      const last = await Geolocation.getCurrentPosition({
+        enableHighAccuracy: false,
+        timeout: 5000,
+        maximumAge: 600000 // 10 min
+      });
+      return {
+        latitude: last.coords.latitude,
+        longitude: last.coords.longitude
+      };
     }
-
-    const coordinates = await Geolocation.getCurrentPosition({
-      enableHighAccuracy: true,
-      timeout: 10000
-    });
-
-    return {
-      latitude: coordinates.coords.latitude,
-      longitude: coordinates.coords.longitude
-    };
-  } catch (error) {
-    console.error('Fehler beim Standortabruf:', error);
-    throw error;
   }
-}
 
   /**
-   * Hauptmethode: Suche Kinos nach Postleitzahl oder Stadt
+   * Suche nach Stadt/PLZ:
+   * 1) Nominatim geokodiert → (lat,lng)
+   * 2) Overpass-Suche um das Zentrum
    */
-  searchCinemas(params: CinemaSearchParams): Observable<CinemaSearchResponse> {
-    const startTime = Date.now();
+searchCinemas(params: { city?: string; zipCode?: string; radius?: number }): Observable<CinemaSearchResponse> {
+  const q = params.zipCode || params.city || '';
+  const headers = {
+    'Accept': 'application/json',
+    'User-Agent': 'MovieTrends/1.0 (contact: youremail@example.com)',
+    'Accept-Language': 'de'
+  };
 
-    // Eingabe validieren
-    if (!this.isValidSearchParams(params)) {
-      return throwError(() => ({
-        code: CinemaErrorCode.INVALID_LOCATION,
-        message: 'Bitte geben Sie eine gültige 5-stellige Postleitzahl oder Stadt ein.'
-      } as CinemaSearchError));
-    }
-
-    // Cache prüfen
-    const cacheKey = this.getCacheKey(params);
-    const cachedResult = this.searchCache.get(cacheKey);
-    if (cachedResult) {
-      console.log('Cache hit für Kino-Suche:', cacheKey);
-      return of(cachedResult);
-    }
-
-    // Koordinaten ermitteln und dann Kinos suchen
-    return this.getCoordinates(params).pipe(
-      switchMap(coords => this.searchCinemasAroundCoordinates(coords, params)),
-      map(response => ({
-        ...response,
-        queryTime: Date.now() - startTime
-      })),
-      catchError(error => this.handleError(error)),
-      // Cache speichern
-      map(result => {
-        this.searchCache.set(cacheKey, result);
-        // Cache nach Zeit löschen
-        setTimeout(() => {
-          this.searchCache.delete(cacheKey);
-        }, this.CACHE_DURATION);
-        return result;
-      })
-    );
-  }
+  return from(Http.request({
+    method: 'GET',
+    url: NOMINATIM_SEARCH,
+    headers,
+    params: {
+      format: 'json',
+      addressdetails: '1',
+      limit: '1',
+      q
+    },
+    connectTimeout: 15000,
+    readTimeout: 15000
+  })).pipe(
+    map(res => {
+      const arr = res.data as Array<any>;
+      if (!arr?.length) {
+        const e: CinemaSearchError = {
+          code: 'GEOCODING_ERROR',
+          message: `Ort "${q}" konnte nicht geokodiert werden.`
+        };
+        throw e;
+      }
+      const item = arr[0];
+      return {
+        lat: parseFloat(item.lat),
+        lng: parseFloat(item.lon),
+        display: item.display_name as string
+      };
+    }),
+    switchMap(({ lat, lng, display }) =>
+      this.searchCinemasByCoordinates(
+        lat,
+        lng,
+        params.radius || CINEMA_SEARCH_DEFAULTS.RADIUS
+      ).pipe(
+        map(r => ({ ...r, searchLocation: display }))
+      )
+    ),
+    catchError(err => {
+      const mapped: CinemaSearchError = {
+        code: (err?.code as string) || 'NETWORK_ERROR',
+        message: err?.message || 'Netzwerkfehler bei der Suche.',
+        details: err
+      };
+      return throwError(() => mapped);
+    })
+  );
+}
 
   /**
    * Koordinaten aus Suchparametern ermitteln

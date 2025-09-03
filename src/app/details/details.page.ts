@@ -22,7 +22,7 @@ import { catchError, firstValueFrom, forkJoin, of } from 'rxjs';
     styleUrls: ['./details.page.scss'],
     imports: [
         IonSkeletonText, IonButton, IonIcon, IonBackButton,
-        IonButtons, IonContent, IonHeader, IonToolbar,
+        IonButtons, IonContent, IonHeader,
         CommonModule, FormsModule, DatePipe, DecimalPipe, UpperCasePipe
     ]
 })

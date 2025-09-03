@@ -4,23 +4,22 @@ import { FormsModule } from '@angular/forms';
 import { Router , RouterLink } from '@angular/router';
 import {
   IonContent,IonButton, IonIcon,
-  IonSkeletonText, IonFab, IonFabButton, IonSearchbar, AlertController
-} from '@ionic/angular/standalone';
+  IonSkeletonText, IonFab, IonFabButton, IonSearchbar, AlertController, IonFooter, IonToolbar } from '@ionic/angular/standalone';
 import { WatchlistService, WatchlistItem } from '../../services/watchlist.service';
 import { Auth, onAuthStateChanged, User } from '@angular/fire/auth';
 import { BottomNavComponent } from '../../components/bottom-nav/bottom-nav.component';
+import { IonicModule } from "@ionic/angular";
 
 @Component({
     selector: 'app-watchlist',
     templateUrl: './watchlist.page.html',
     styleUrls: ['./watchlist.page.scss'],
     imports: [
-        CommonModule, FormsModule,
-        IonContent, IonButton,
-        BottomNavComponent,
-        IonIcon, IonSkeletonText, IonFab, IonFabButton,
-         IonSearchbar, RouterLink
-    ]
+    CommonModule, FormsModule,
+    IonContent, IonButton,
+    BottomNavComponent,
+    IonIcon, IonSkeletonText, IonFab, IonFabButton,
+    IonSearchbar, RouterLink, IonicModule]
 })
 export class WatchlistPage implements OnDestroy {
 

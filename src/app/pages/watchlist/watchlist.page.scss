@@ -259,7 +259,7 @@
 .clear-fab {
   --background: var(--accent-color);
   --color: white;
-  box-shadow: 0 8px 24px rgba(184, 34, 46, 0.3);
+
 
   &:hover {
     --background: #c92532;
@@ -267,6 +267,7 @@
     box-shadow: 0 12px 32px rgba(184, 34, 46, 0.4);
   }
 }
+
 
 /* Bottom Navigation - Ultra Modern Design */
 
@@ -278,8 +279,10 @@
     text-align: center;
 
     .sort-options {
-      margin-left: 0;
+
       justify-content: center;
+      flex-wrap: wrap;     // neue Zeile, falls Buttons zu breit
+      gap: 0.2rem;
     }
   }
 
@@ -321,6 +324,7 @@
     margin-bottom: 0.75rem;
     border-radius: 16px;
 
+
     .movie-info {
       padding: 1rem;
     }
@@ -329,6 +333,7 @@
   .movies-container {
     padding: 0 0.75rem 0.75rem 0.75rem;
   }
+
 
 
 }

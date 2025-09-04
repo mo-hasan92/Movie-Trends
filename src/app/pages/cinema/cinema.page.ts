@@ -11,14 +11,14 @@ import { PLZ_REGEX } from '../../config/api-key';
 import { BottomNavComponent } from '../../components/bottom-nav/bottom-nav.component';
 import { addIcons } from 'ionicons';
 @Component({
-    selector: 'app-cinema',
-    templateUrl: './cinema.page.html',
-    styleUrls: ['./cinema.page.scss'],
-    imports: [
-        CommonModule, FormsModule,
-        IonContent, IonButton, IonIcon, BottomNavComponent,
-        IonSpinner, IonSkeletonText, IonSearchbar
-    ]
+  selector: 'app-cinema',
+  templateUrl: './cinema.page.html',
+  styleUrls: ['./cinema.page.scss'],
+  imports: [
+    CommonModule, FormsModule,
+    IonContent, IonButton, IonIcon, BottomNavComponent,
+    IonSpinner, IonSkeletonText, IonSearchbar
+  ]
 })
 
 export class CinemaPage {
@@ -37,7 +37,7 @@ export class CinemaPage {
   // UI State
   public showSuggestions: WritableSignal<boolean> = signal(false);
 
-   // Neue Properties für Geolocation
+  // Neue Properties für Geolocation
   public isLocating: WritableSignal<boolean> = signal(false);
   public locationPermission: WritableSignal<'granted' | 'denied' | 'prompt'> = signal('prompt');
 
@@ -65,7 +65,7 @@ export class CinemaPage {
       if (typeof (navigator as any).permissions !== 'undefined') {
         const status = await (navigator as any).permissions.query({ name: 'geolocation' });
         this.locationPermission.set(status.state === 'granted' ? 'granted' :
-                                  status.state === 'denied' ? 'denied' : 'prompt');
+          status.state === 'denied' ? 'denied' : 'prompt');
       }
     } catch (error) {
       console.error('Fehler bei Berechtigungsprüfung:', error);

@@ -559,9 +559,8 @@ async shareMovie(): Promise<void> {
  * Prüfen ob Web Share API verfügbar ist
  */
 isWebShareSupported(): boolean {
-  return typeof navigator !== 'undefined' &&
-         'share' in navigator &&
-         window.location.protocol === 'https:';
+  return typeof navigator !== 'undefined' && 'share' in navigator;
+         //window.location.protocol === 'https:';
 }
 
 getShareButtonText(): string {
